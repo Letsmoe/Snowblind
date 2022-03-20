@@ -109,6 +109,89 @@ function useEffect(callback, stateConditional = []) {
 	})
 }
 
+function useTransition(obj, options) {
+	/**
+	 * Animates the render cycle given CSS properties
+	 */
+	options = Object.assign({
+		delay: 0,
+		duration: 400,
+		maxCopies: Infinity,
+		customTiming: (t, b, c, d) => {
+			// Default easeInOutSine function
+			return -c / 2 * (Math.cos(Math.PI * t / d) - 1) + b;
+		}
+	}, options)
+	this.transitionMaxCopies = options.maxCopies
+	this.usesTransition = true
+	const animateChange = (from, to, nodes) => {
+		return new Promise((resolve) => {
+			setTimeout(() => {
+				const StartTime = performance.now()
+				const matchRegExp = new RegExp(/([0-9.-]+)([A-z%]+)?/g)
+				const convert = (i) => [undefined, null].indexOf(i) == -1 && i.toString().matchAll(matchRegExp);
+				const interval = (lastExpectedCycle = false) => {
+					const elapsed = performance.now() - StartTime;
+					if (elapsed >= options.duration) {
+						/**
+						 * Run one last time to clear lastly updated properties
+						 */
+						if (!lastExpectedCycle) {
+							requestAnimationFrame(() => {
+								interval(true)
+							})
+						}
+						resolve()
+					} else {
+						requestAnimationFrame(() => {
+							interval()
+						})
+					}
+					for (const i in to) {
+						var End = Array.from(convert(to[i]));
+						if ([undefined, null].indexOf(from[i]) == -1) {
+							var j = 0;
+							var replaced = from[i].toString().replace(matchRegExp, (x, num, unit) => {
+								num = parseFloat(num)
+								var _to = parseFloat(End[j][1])
+								j++
+								var standardUnit = (["color", "background", "background-color"].indexOf(i) === -1) ? "px" : ""
+								return options.customTiming(elapsed, num, _to - num, options.duration).toString() + (unit || End[j - 1][2] || standardUnit)
+							})
+							for (const node of nodes) {
+								node[0].style[i] = replaced
+								if (lastExpectedCycle) {
+									node[0].style[i] = to[i]
+								}
+							}
+						}
+					}
+				}
+				requestAnimationFrame(() => {
+					interval()
+				})
+			}, options.delay)
+		})
+	}
+	this.transitionFunction = {
+		from: (callback) => {
+			for (const i in obj.from) {
+				this.Nodes.map(x => x[0].style[i] = obj.from[i])
+			}
+			callback()
+		},
+		render: (callback) => {
+			animateChange(obj.render, obj.enter, this.Nodes).then(callback)
+		},
+		enter: (callback) => {
+			animateChange(obj.from, obj.enter, this.Nodes).then(callback)
+		},
+		leave: (callback) => {
+			animateChange(obj.enter, obj.leave, this.Nodes).then(callback)
+		}
+	}
+}
+
 export {
 	useRef,
 	useState,
