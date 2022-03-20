@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Something</title>
+</head>
+<body>
+	<script type="module">
+		import Snowblind from "./dist/snowblind.js";
+		import {useState} from "./modules/hooks.js";
+		import {html} from "./src/html.js";
+
+		const component = () => {
+			const [value, setValue] = useState(0);
+
+			return () => {
+				console.log(value);
+				return html`<button @click=${() => setValue(value + 1)}>Value: ${value}</button>`
+			}
+		}
+
+		window.expose(component)
+	</script>
+</body>
+
+<component></component>
+</html>

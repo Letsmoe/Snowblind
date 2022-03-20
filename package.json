@@ -1,0 +1,20 @@
+{
+  "name": "snowblind",
+  "version": "1.0.0",
+  "description": "Snowblind Rendering Engine - Taking component based design to the next level.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"build-dev": "webpack --config=webpack.config.dev.js",
+	"build-prod": "webpack --config=webpack.config.prod.js"
+  },
+  "author": "letsmoe",
+  "license": "MIT",
+  "dependencies": {
+    "webpack": "^5.70.0",
+    "webpack-cli": "^4.9.2"
+  }
+}
