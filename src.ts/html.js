@@ -1,5 +1,5 @@
 import Snowblind from "./snowblind.js";
-import {ValueBinder, exposedComponents} from "./shared-internals.js"
+import {ValueBinder} from "./shared-internals.js"
 
 function html(strings, ...vars) {
 
@@ -298,7 +298,7 @@ function html(strings, ...vars) {
 	var childNodes = Array.from(template.content.childNodes).map(x => x.getElementsByTagName && Array.from(x.getElementsByTagName("*"))).flat()
 	for (const children of childNodes) {
 		let component;
-		if (children && children.tagName && (component = exposedComponents[children.tagName.toLowerCase()])) {
+		if (children && children.tagName && (component = window.exposedComponents[children.tagName.toLowerCase()])) {
 			var attributeValues = Snowblind.getNodeProperties(children);
 			new component(attributeValues, {
 				replace: children,

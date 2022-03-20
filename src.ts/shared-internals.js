@@ -46,10 +46,8 @@ class ValueBinder {
 	}
 };
 
-
-const exposedComponents = {};
 const UpdateDispatcher = new Observable();
 
 export {
-	UpdateDispatcher, ValueBinder, Observable, exposedComponents
+	UpdateDispatcher, ValueBinder, Observable
 }

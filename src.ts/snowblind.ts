@@ -1,3 +1,9 @@
+interface Window {
+	exposedComponents : Object,
+	expose : Function
+}
+
+
 import RenderAssignment from "./render-assignment.js";
 import {Observer} from "./observer.js";
 import {
@@ -7,7 +13,8 @@ import {
 	html
 } from "./html.js"
 
-import {UpdateDispatcher, exposedComponents} from "./shared-internals.js"
+import {UpdateDispatcher} from "./shared-internals.js"
+window.exposedComponents = {};
 
 var style = document.createElement("style");
 style.innerHTML = ".render-placeholder {display:none;}"
@@ -25,7 +32,7 @@ window.expose = function (components, optNames) {
 	for (let i = 0; i < components.length; i++) {
 		const component = components[i];
 		var name = (typeof optNames[i] === "undefined" ? component.name : optNames[i]).toLowerCase();
-		exposedComponents[name] = component;
+		window.exposedComponents[name] = component;
 	}
 }
 
@@ -43,7 +50,7 @@ const Snowblind = {
 			}, options)
 
 			this.createdReferences = {} // All references to nodes created with (useRef())
-			this.globalSelf = exposedComponents[this.constructor.name.toLowerCase()];
+			this.globalSelf = window.exposedComponents[this.constructor.name.toLowerCase()];
 			/**
 			 * Convert expected properties
 			 */
@@ -158,8 +165,10 @@ const Snowblind = {
 	},
 
 	renderAll() {
-		for (const name in exposedComponents) {
-			const property = exposedComponents[name]
+		const getFrom = window.exposedComponents;
+
+		for (const name in getFrom) {
+			const property = getFrom[name]
 			const isFunction = typeof property === 'function'
 			const isComponent = property && property.prototype instanceof Snowblind.Component;
 			if (isComponent || isFunction) {
@@ -170,12 +179,12 @@ const Snowblind = {
 					 */
 					const props = Snowblind.getNodeProperties(Component)
 					if (isFunction) {
-						new Snowblind.Component(exposedComponents[name], {
+						new Snowblind.Component(getFrom[name], {
 							replace: Component,
 							isFunctionProps: props,
 						})
 					} else {
-						new exposedComponents[name](props, {
+						new getFrom[name](props, {
 							replace: Component
 						})
 					}
