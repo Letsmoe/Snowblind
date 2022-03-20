@@ -4,15 +4,11 @@ class Observable {
 		this._subscribers = [];
 	}
 
-	_updateValue(value) {
+	next(value) {
 		this._value = value;
 		for (const subscriber of this._subscribers) {
 			subscriber(value)
 		}
-	}
-
-	next(value) {
-		this._updateValue(value)
 	}
 
 	subscribe(callback) {

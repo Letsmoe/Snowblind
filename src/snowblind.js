@@ -81,10 +81,6 @@ const Snowblind = {
 			this.didMountCallbacks = []
 			this.didUpdateCallbacks = []
 
-			if (this._isFunction) {
-				this._generatorFunction = obj(options.isFunctionProps)
-			}
-
 			var baseOptions = this.initWith()
 			/**
 			 * Initialize empty dependencies object for useEffect calls
@@ -95,12 +91,18 @@ const Snowblind = {
 				this.originalElement = options.replace
 				this.originalChildren = Array.from(options.replace.childNodes);
 			}
+
 			this.Renderer = new RenderAssignment(this, options)
-			/**
-			 * Write component to the UpdateDispatcher to be captured by any hooks, close immediately after.
-			 */
-			UpdateDispatcher.next(this);
-			UpdateDispatcher.restore();
+
+			if (this._isFunction) {
+				this._generatorFunction = obj(options.isFunctionProps)
+				/**
+				 * Write component to the UpdateDispatcher to be captured by any hooks, close immediately after.
+				 */
+				UpdateDispatcher.next(this);
+				UpdateDispatcher.restore();
+			}
+			
 			for (const i of this._watchingObservers) {
 				i.boundRender = this.Renderer
 			}

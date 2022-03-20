@@ -44,7 +44,6 @@ function describe(description = "", callback = () => {}) {
 	};
 	testInfo = []
 	conductedTests.push(obj)
-	console.log(window.conductedTests, conductedTests);
 	return obj
 }
 

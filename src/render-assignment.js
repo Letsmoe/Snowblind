@@ -1,9 +1,7 @@
 import Snowblind from "./snowblind.js"
-import {UpdateDispatcher} from "./shared-internals.js"
 
 export default class RenderAssignment {
 	constructor(obj, options = {}) {
-		console.log(options);
 		obj._Observer.boundRender = this
 		this._wasDestroyed = false;
 		this.copiesKeptAlive = 0;

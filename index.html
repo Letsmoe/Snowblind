@@ -11,12 +11,12 @@
 		import Snowblind from "./dist/snowblind.js";
 		import {useState} from "./modules/hooks.js";
 		import {html} from "./src/html.js";
+		import {UpdateDispatcher} from "./src/shared-internals.js"
 
 		const component = () => {
 			const [value, setValue] = useState(0);
 
 			return () => {
-				console.log(value);
 				return html`<button @click=${() => setValue(value + 1)}>Value: ${value}</button>`
 			}
 		}

@@ -96,7 +96,6 @@ export default function diff(template, elem) {
 
 		// If the node serves as a reference, re-assign to the active node rather than the one that will be rendered.
 		if (node.isReferenceTo !== undefined) {
-			console.log(node);
 			node.isReferenceTo = domNodes[index]
 		}
 	});

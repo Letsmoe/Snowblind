@@ -29,7 +29,6 @@ window.addEventListener("load", function () {
 		var _targets = e_target,
 			_event;
 
-		console.log(_keyDownMap)
 
 		if ((isCtrl && _keyDownMap["v"]) || (isShift && _keyDownMap["insert"])) {
 			/**
