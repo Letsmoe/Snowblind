@@ -9,10 +9,6 @@ import {
 
 import {UpdateDispatcher, exposedComponents} from "./shared-internals.js"
 
-var style = document.createElement("style");
-style.innerHTML = ".render-placeholder {display:none;}"
-document.head.appendChild(style)
-
 /**
  * Exposes a component to be grabbed by the initial render process.
  * @param {Array<Snowblind.Component>} components List of components to add
@@ -32,13 +28,12 @@ window.expose = function (components, optNames) {
 /**
  * Add component to global scope;
  */
-
 const Snowblind = {
 	Component: class Component {
-		constructor(obj, options = {}) {
+		constructor(props, options = {}) {
 			options = Object.assign({
 				replace: false,
-				isFunctionProps: {},
+				generator: false,
 				hasTheme: false,
 			}, options)
 
@@ -50,13 +45,13 @@ const Snowblind = {
 			if (this.globalSelf) {
 				const propTypes = this.globalSelf.propTypes;
 				if (propTypes) {
-					obj = typeCheck(obj, propTypes, this.globalSelf.defaultProps)
+					props = typeCheck(props, propTypes, this.globalSelf.defaultProps)
 					this.unexpectedArguments = {}
-					for (const typeName in obj) {
-						var value = obj[typeName];
+					for (const typeName in props) {
+						var value = props[typeName];
 						if (!propTypes.hasOwnProperty(typeName)) {
 							this.unexpectedArguments[typeName] = value;
-							delete obj[typeName];
+							delete props[typeName];
 						}
 					}
 				}
@@ -67,22 +62,24 @@ const Snowblind = {
 			 */
 			this.hasTheme = options.hasTheme;
 			this._watchingObservers = []
-			this.transitionMaxCopies = Infinity;
+			this._maxCopies = Infinity;
 			/**
 			 * Check if obj is a function, then it needs execution
 			 */
-			this._isFunction = typeof obj === 'function';
-			this.usesTransition = false
+			this._isFunction = typeof options.generator === "function";
+			this._usesTransition = false
 
 			/**
 			 * Setup arrays for event listening
 			 */
 			this.didMountCallbacks = []
 			this.didUpdateCallbacks = []
+			this.willUnmountCallbacks = []
 			/**
 			 * Initialize empty dependencies object for useEffect calls
 			 */
-			this._Observer = new Observer(obj || {})
+			props.children = Array.from(options.replace.childNodes);
+			this._Observer = new Observer(props || {})
 			this.props = this._Observer._value
 			if (options.replace instanceof HTMLElement) {
 				this.originalElement = options.replace
@@ -92,7 +89,7 @@ const Snowblind = {
 			this.Renderer = new RenderAssignment(this, options)
 
 			if (this._isFunction) {
-				this._generatorFunction = obj(options.isFunctionProps)
+				this._generatorFunction = options.generator(props)
 				/**
 				 * Write component to the UpdateDispatcher to be captured by any hooks, close immediately after.
 				 */
@@ -134,10 +131,9 @@ const Snowblind = {
 		onComponentDidUpdate(callback) {
 			this.didUpdateCallbacks.push(callback)
 		}
-
-		componentDidUpdate() {}
-		componentDidMount() {}
-		componentWillUnmount() {}
+		onComponentWillUnmount() {
+			this.willUnmountCallbacks.push(callback)
+		}
 
 		destroy() {
 			this.Renderer.Destroy()
@@ -156,32 +152,44 @@ const Snowblind = {
 			);
 		}
 	},
-
-	renderAll() {
-		for (const name in exposedComponents) {
-			const property = exposedComponents[name]
-			const isFunction = typeof property === 'function'
-			const isComponent = property && property.prototype instanceof Snowblind.Component;
-			if (isComponent || isFunction) {
-				const LinkedComponents = Array.from(document.getElementsByTagName(name))
-				for (const Component of LinkedComponents) {
-					/**
-					 * Try to auto populate an entries value with a global variable or constant
-					 */
-					const props = Snowblind.getNodeProperties(Component)
-					if (isFunction) {
-						new Snowblind.Component(exposedComponents[name], {
-							replace: Component,
-							isFunctionProps: props,
-						})
-					} else {
-						new exposedComponents[name](props, {
-							replace: Component
-						})
+	/**
+	 * Searches the DOMTree recursively for components, this will ensure parent nodes will be rendered and their children will be included in the render afterwards
+	 * 
+	 */
+	renderAllIn(element = document.body) {
+		const recurse = (parentList) => {
+			// Filter out scripts
+			for (const parent of parentList) {
+				if (parent instanceof HTMLScriptElement) {
+					continue;
+				}
+				let nodeName = parent.nodeName.toLowerCase()
+				if (exposedComponents.hasOwnProperty(nodeName)) {
+					// Element nodeName in the names of exposed components, it must be one!
+					let component = exposedComponents[nodeName];
+					const isFunction = typeof component === 'function'
+					const isComponent = component && component.prototype instanceof Snowblind.Component;
+					if (isComponent || isFunction) {
+						const props = Snowblind.getNodeProperties(parent)
+						if (isFunction) {
+							new Snowblind.Component(props, {
+								generator: component,
+								replace: parent
+							})
+						} else {
+							new component(props, {
+								replace: parent
+							})
+						}
 					}
+				} else {
+					// No component here! Let's go deeper!
+					recurse(Array.from(parent.children))
 				}
 			}
 		}
+
+		recurse(Array.from(element.children));
 	},
 	getNodeProperties(node) {
 		return Object.fromEntries(Array.from(node.attributes).map(x => {
@@ -243,7 +251,7 @@ const Snowblind = {
 }
 
 window.addEventListener("load", () => {
-	Snowblind.renderAll()
+	Snowblind.renderAllIn()
 })
 
 /**

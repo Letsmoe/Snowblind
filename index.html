@@ -6,6 +6,15 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Something</title>
 </head>
+<style>
+	.point {
+		position: absolute;
+		width: 5px;
+		height: 5px;
+		display: block;
+		background-color: red;
+	}
+</style>
 <body>
 	<script type="module">
 		import Snowblind from "./dist/snowblind.js";
@@ -21,9 +30,42 @@
 			}
 		}
 
-		window.expose(component)
+		const nestedComponent = (props) => {
+			console.log(props);
+			return () => html`<div>
+				${props.children}
+				<p>Hello From Nested Component</p>
+			</div>`
+		}
+
+		window.expose([component, nestedComponent])
 	</script>
 </body>
 
+<nestedComponent>
+	<component></component>
+</nestedComponent>
 <component></component>
+<!-- <script type="module">
+	const drawPoint = (x,y) => {
+		const span = document.createElement("span");
+		span.classList.add("point")
+		span.style.left = x + "px";
+		span.style.top = y + "px";
+		document.body.appendChild(span)
+	} 
+
+	document.body.addEventListener("mousemove", (e) => {
+		drawPoint(e.clientX, e.clientY);
+	})
+	import Simulation from "./modules/simulation-tests.js";
+	setTimeout(() => {
+		window.sim = new Simulation();
+		window.sim.moveMouse(50, 50, 1000, 50, {stepSize: 10, deviation: 5, duration: 500})
+		window.sim.mouseClick({
+			coordinates: [40, 20],
+			element: document.querySelector("button")
+		})
+	}, 500)
+</script> -->
 </html>

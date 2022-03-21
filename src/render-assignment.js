@@ -4,27 +4,15 @@ export default class RenderAssignment {
 	constructor(obj, options = {}) {
 		obj._Observer.boundRender = this
 		this._wasDestroyed = false;
-		this.copiesKeptAlive = 0;
-		this.lastNode;
-		this.Node;
-		this.ID = Math.random().toString(36).substring(2, 15);
-		/**
-		 * Create a linking placeholder
-		 */
-		var Link = document.createElement("span");
-		Link.classList.add("render-placeholder");
-		Link.setAttribute("render-is-linked-to", this.ID);
-		if (options.replace instanceof HTMLElement) {
-			options.replace.replaceWith(Link);
-		} else {
-			document.body.appendChild(Link);
-		}
-		this.LinkedTo = Link
+		this._renderIsFirstTime = true
+		this._maxCopies = obj._maxCopies;
+		this._copiesKeptAlive = 0;
+		this._lastNode = options.replace || document.body.appendChild(document.createElement("i"));
+		this._Node;
 		this.Object = obj
 		if (!(obj instanceof Snowblind.Component)) {
 			throw new Error("Renderer didn't receive object of type Snowblind.Component");
 		}
-		this._renderIsFirstTime = true
 	}
 
 	Render() {
@@ -34,70 +22,60 @@ export default class RenderAssignment {
 			 */
 			throw new Error("Renderer has been destroyed.")
 		}
-		var maxCopies = this.Object.transitionMaxCopies;
 
-		if (this._renderIsFirstTime === false) {
-			/**
-			 * Assign childElements
-			 */
-			this.Object.originalChildren = this.Node.childNodes;
-		}
-
-		if (this.Object.usesTransition) {
-			const currentNode = this.Node;
-			if (this.copiesKeptAlive >= maxCopies) {
+		if (this.Object._usesTransition) {
+			const currentNode = this._Node;
+			if (this._copiesKeptAlive >= this._maxCopies) {
 				currentNode.remove()
 			} else {
 				this.Object.transitionFunction.leave(() => {
 					currentNode.remove()
-					this.copiesKeptAlive -= 1
+					this._copiesKeptAlive -= 1
 				})
 			}
 		}
 		/**
 		 * Give access to parent element
 		 */
-		this.Object.parentElement = this.LinkedTo.parentNode;
+		this.Object.parentElement = this._lastNode.parentNode;
 		var obj = this.Object.getNode()
 		if (obj instanceof HTMLElement) {
 			/**
 			 * Keep eventListeners and append directly as HTMLElement
 			 */
-			this.Node = obj
+			this._Node = obj
 		} else {
 			throw new Error("Can only initialize object with type of HTMLElement.")
 		}
 		/**
 		 * Reset nodes on base object
 		 */
-		this.Object.Node = this.Node
-		var Node = this.Node
-		if (this.lastNode) {
-			const activeElement = document.activeElement;
-			const selectionStart = activeElement.selectionStart;
-			const selectionEnd = activeElement.selectionEnd;
-			this.lastNode.replaceWith(Node);
-			if (activeElement) {
-				const key = activeElement.getAttribute("key");
-				if (key) {
-					const focusNode = Node.querySelector(`[key='${key}']`)
-					focusNode.focus();
-					focusNode.setSelectionRange(selectionStart, selectionEnd)
-				}
+		this.Object.Node = this._Node
+		var Node = this._Node
+		const activeElement = document.activeElement;
+		const selectionStart = activeElement.selectionStart;
+		const selectionEnd = activeElement.selectionEnd;
+		this._lastNode.replaceWith(Node);
+		if (activeElement) {
+			// Check if there was a focused element and if it had a `key` attribute that might be used to re-focus it.
+			const key = activeElement.getAttribute("key");
+			if (key) {
+				// Key found, let's focus the element.
+				const focusNode = Node.querySelector(`[key='${key}']`)
+				focusNode.focus();
+				focusNode.setSelectionRange(selectionStart, selectionEnd)
 			}
-		} else {
-			this.LinkedTo.replaceWith(Node);
 		}
-		this.lastNode = Node;
+		this._lastNode = Node;
 		/**
 		 * Provide node to the component
 		 */
 
-		if (this.Object.usesTransition) {
+		if (this.Object._usesTransition) {
 			/**
 			 * Apply any transition effects to the node
 			 */
-			this.copiesKeptAlive++
+			this._copiesKeptAlive++
 			this.Object.transitionFunction.from(() => {
 				if (!this._renderIsFirstTime) {
 					this.Object.transitionFunction.render()
@@ -139,19 +117,13 @@ export default class RenderAssignment {
 			/**
 			 * Component is only mounted AFTER the render finishes
 			 */
-			this.Object.componentDidMount()
-			for (const listener of this.Object.didMountCallbacks) {
-				listener()
-			}
+			execArray(this.Object.didMountCallbacks)
 			this._renderIsFirstTime = false
 		} else {
 			/**
 			 * Run componentDidUpdate() method AFTER component rerender
 			 */
-			this.Object.componentDidUpdate()
-			for (const listener of this.Object.didUpdateCallbacks) {
-				listener()
-			}
+			execArray(this.Object.didUpdateCallbacks)
 		}
 	}
 
@@ -168,13 +140,15 @@ export default class RenderAssignment {
 		 * Unmount component then remove node and linking element
 		 */
 		this._wasDestroyed = true
-		this.Object.componentWillUnmount()
-		if (this.Object.usesTransition) {
+		execArray(this.Object.willUnmountCallbacks)
+		if (this.Object._usesTransition) {
 			this.Object.transitionFunction.leave(() => {
-				this.Node.remove()
+				this._Node.remove()
 			})
 		} else {
-			this.Node.remove()
+			this._Node.remove()
 		}
 	}
 }
+
+const execArray = (arr) => arr.map(x => x());

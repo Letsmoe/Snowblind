@@ -295,18 +295,9 @@ function html(strings, ...vars) {
 	/**
 	 * Loop through all children again and render components
 	 */
-	var childNodes = Array.from(template.content.childNodes).map(x => x.getElementsByTagName && Array.from(x.getElementsByTagName("*"))).flat()
-	for (const children of childNodes) {
-		let component;
-		if (children && children.tagName && (component = exposedComponents[children.tagName.toLowerCase()])) {
-			var attributeValues = Snowblind.getNodeProperties(children);
-			new component(attributeValues, {
-				replace: children,
-				implementedEvents: children._savedEvents || []
-			})
-		}
-	}
-	return template.content.children[0]
+	const child = template.content.children[0];
+	Snowblind.renderAllIn(child)
+	return child
 }
 
 function repeat(items, itemTemplate, keyFunction = () => {}) {
