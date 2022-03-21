@@ -18,12 +18,6 @@ function html(strings, ...vars) {
 		elem.appendChild(textElement);
 	}
 
-	function hasParent(element, tagName) {
-		if (!element.parentNode) return false;
-		if (element.tagName === tagName) return true;
-		return hasParent(element.parentNode, tagName);
-	}
-
 	const MATCH_INDEX_REGEX = /\{\{([0-9]+)\}\}/g;
 	var result = "",
 		i = 0;
@@ -226,14 +220,12 @@ function html(strings, ...vars) {
 		for (const children of childNodes) {
 			if (children.nodeType === Node.TEXT_NODE) {
 				var innerText = children.wholeText;
-				if (!hasParent(children, "PRE")) {
-					innerText = innerText.trim()
-				}
 				const matchArray = Array.from(innerText.matchAll(MATCH_INDEX_REGEX));
 				innerText = innerText.replace(MATCH_INDEX_REGEX, (i) => {
 					return " ".repeat(i.length)
 				})
 				if (matchArray.length > 0) {
+					// We're gonna insert everything from scratch, just remove all content before inserting something twice...
 					children.textContent = ""
 				}
 				var lastOffsetIndex = 0;
@@ -270,7 +262,7 @@ function html(strings, ...vars) {
 								 */
 								insertText(node, value)
 							} else {
-								console.error('Value might not be supported...')
+								console.error('The value you passed as a variable is not yet supported.')
 							}
 						}
 					}
