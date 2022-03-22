@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Simple List Benchmark</title>
+</head>
+
+<body>
+	<App></App>
+</body>
+
+<script type="module">
+	import Snowblind from "../dist/snowblind.js";
+	import {
+		useState,
+		useToggle
+	} from "../modules/hooks/index.js";
+	import {
+		html
+	} from "../src/html.js";
+
+	import {Perf} from "../modules/performance/index.js"
+
+	Perf.start();
+
+	function ListItem(props) {
+		let text = props.text;
+		return () => html`<li>${text}</li>`
+	}
+
+
+	function arrayGenerator(length) {
+		return Array.apply(null, {
+			length: length
+		}).map(Number.call, Number)
+	}
+
+	function App(props) {
+		const [multiplier, setMultiplier] = useState(1);
+
+		const resetMultiplier = () => {
+			setMultiplier(2)
+		}
+
+		return () => html`<div class="App">
+			<button @click=${resetMultiplier}>Click Me</button>
+			<ul>
+			${
+				arrayGenerator(5000).map(i => {
+					return html`<ListItem key=${i} text=${i}></ListItem>`
+				})
+			}
+			${
+				arrayGenerator(5000).map(i => {
+					return html`<ListItem key=${i} text=${i + multiplier}></ListItem>`
+				})
+			}
+			</ul>
+		</div>`;
+	}
+
+	window.expose([App, ListItem])
+
+	Perf.stop();
+</script>
+
+</html>

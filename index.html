@@ -18,7 +18,7 @@
 <body>
 	<script type="module">
 		import Snowblind from "./dist/snowblind.js";
-		import {useState} from "./modules/hooks.js";
+		import {useState, useToggle} from "./modules/hooks/index.js";
 		import {html} from "./src/html.js";
 		import {UpdateDispatcher} from "./src/shared-internals.js"
 
@@ -31,20 +31,23 @@
 		}
 
 		const nestedComponent = (props) => {
-			console.log(props);
-			return () => html`<div>
+			const [value, toggle] = useToggle("purple", ["purple", "cyan", "blue"]);
+
+			return () => html`<div style="background-color: ${value};">
 				${props.children}
 				<p>Hello From Nested Component ${"or not buddy"}</p>
+				<button @click=${toggle}>Change my color</button>
 			</div>`
 		}
 
-		window.expose([component, nestedComponent])
+		window.expose([component, nestedComponent]);
 	</script>
 </body>
 
 <nestedComponent>
 	<component></component>
 </nestedComponent>
+<ClassComponent></ClassComponent>
 <component></component>
 <!-- <script type="module">
 	const drawPoint = (x,y) => {

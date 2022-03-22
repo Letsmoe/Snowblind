@@ -7,6 +7,8 @@ import {
 	html
 } from "./html.js"
 
+export {useRef, useState, useEffect, useTransition} from "../modules/hooks/index.js";
+
 import {UpdateDispatcher, exposedComponents} from "./shared-internals.js"
 
 /**
@@ -30,10 +32,9 @@ window.expose = function (components, optNames) {
  */
 const Snowblind = {
 	Component: class Component {
-		constructor(props, options = {}) {
+		constructor(props, generator, options = {}) {
 			options = Object.assign({
 				replace: false,
-				generator: false,
 				hasTheme: false,
 			}, options)
 
@@ -66,7 +67,6 @@ const Snowblind = {
 			/**
 			 * Check if obj is a function, then it needs execution
 			 */
-			this._isFunction = typeof options.generator === "function";
 			this._usesTransition = false
 
 			/**
@@ -78,50 +78,26 @@ const Snowblind = {
 			/**
 			 * Initialize empty dependencies object for useEffect calls
 			 */
-			props.children = Array.from(options.replace.childNodes);
-			this._Observer = new Observer(props || {})
-			this.props = this._Observer._value
 			if (options.replace instanceof HTMLElement) {
+				props.children = Array.from(options.replace.childNodes);
 				this.originalElement = options.replace
 				this.originalChildren = Array.from(options.replace.childNodes);
 			}
+			this._Observer = new Observer(props || {})
+			this.props = this._Observer._value
 
 			this.Renderer = new RenderAssignment(this, options)
-
-			if (this._isFunction) {
-				this._generatorFunction = options.generator(props)
-				/**
-				 * Write component to the UpdateDispatcher to be captured by any hooks, close immediately after.
-				 */
-				UpdateDispatcher.next(this);
-				UpdateDispatcher.restore();
-			}
+			this._generatorFunction = generator(props)
+			/**
+			 * Write component to the UpdateDispatcher to be captured by any hooks, close immediately after.
+			 */
+			UpdateDispatcher.next(this);
+			UpdateDispatcher.restore();
 			
 			for (const i of this._watchingObservers) {
 				i.boundRender = this.Renderer
 			}
-			/**
-			 * Initialization happens right before any render assignment is executed
-			 */
-			this.__init__()
 			this.Renderer.Render()
-		}
-
-		fadeOutDestroy(duration = 400) {
-			/**
-			 * Debounce for performance
-			 */
-			var startTime = performance.now()
-			const interval = () => {
-				var elapsed = performance.now() - startTime;
-				if (elapsed >= duration) {
-					this.destroy()
-					return
-				}
-				this.Nodes.map(x => x[0].style.opacity = 1 - (elapsed / duration))
-				requestAnimationFrame(interval)
-			}
-			requestAnimationFrame(interval)
 		}
 
 		onComponentDidMount(callback) {
@@ -135,26 +111,12 @@ const Snowblind = {
 			this.willUnmountCallbacks.push(callback)
 		}
 
-		destroy() {
-			this.Renderer.Destroy()
-			for (const ID in this.createdReferences) {
-				delete this.createdReferences[ID];
-			}
-		}
-
-		__init__() {}
-		getNode(...args) {
-			if (this._isFunction) {
-				return this._generatorFunction()
-			}
-			throw new Error(
-				"Could not render, are you sure you created the 'render' method according to our docs? https://continuum-ai.de/doc/snowblind/reference/render-assignment"
-			);
+		render(...args) {
+			return this._generatorFunction()
 		}
 	},
 	/**
 	 * Searches the DOMTree recursively for components, this will ensure parent nodes will be rendered and their children will be included in the render afterwards
-	 * 
 	 */
 	renderAllIn(element = document.body) {
 		const recurse = (parentList) => {
@@ -167,20 +129,12 @@ const Snowblind = {
 				if (exposedComponents.hasOwnProperty(nodeName)) {
 					// Element nodeName in the names of exposed components, it must be one!
 					let component = exposedComponents[nodeName];
-					const isFunction = typeof component === 'function'
-					const isComponent = component && component.prototype instanceof Snowblind.Component;
-					if (isComponent || isFunction) {
-						const props = Snowblind.getNodeProperties(parent)
-						if (isFunction) {
-							new Snowblind.Component(props, {
-								generator: component,
-								replace: parent
-							})
-						} else {
-							new component(props, {
-								replace: parent
-							})
-						}
+					let isFunction = typeof component === 'function'
+					if (isFunction) {
+						const props = this.getNodeProperties(parent);
+						new Snowblind.Component(props, component, {
+							replace: parent
+						})
 					}
 				} else {
 					// No component here! Let's go deeper!
@@ -254,6 +208,15 @@ window.addEventListener("load", () => {
 	Snowblind.renderAllIn()
 })
 
+
+function createElement(type, attributes) {
+	let element = document.createElement(type);
+	for (const key in attributes) {
+		element.setAttribute(key, attributes[key]);
+	}
+	return element;
+}
+
 /**
  * Inserts a given element after another.
  * @param {HTMLElement} el The element given node should be inserted after.
@@ -263,38 +226,4 @@ HTMLElement.prototype.insertAfter = function (el) {
 		el.parentNode.insertBefore(this, el.nextSibling);
 	}
 };
-
-/* EventTarget.prototype.originalAddEvent = EventTarget.prototype.addEventListener;
-EventTarget.prototype.originalRemoveEvent = EventTarget.prototype.removeEventListener;
-
-EventTarget.prototype.addEventListener = function (...args) {
-	var eventType = args[0];
-	if (!this._savedEvents) {
-		this._savedEvents = {};
-	}
-	if (!this._savedEvents[eventType]) {
-		this._savedEvents[eventType] = [];
-	}
-	this._savedEvents[eventType].push(args)
-	console.log(this.originalAddEvent);
-	this.originalAddEvent(...args)
-}
-
-EventTarget.prototype.removeEventListener = function (...args) {
-	var eventType = args[0];
-	if (args[1] && this._savedEvents) {
-		var events = this._savedEvents[eventType];
-		if (events) {
-			for (let i = 0; i < events.length; i++) {
-				const eventArray = events[i];
-				if (eventArray[1] == args[1]) {
-					delete events[i]
-					this._savedEvents[eventType] = events.filter(x => x)
-					break
-				}
-			}
-		}
-	}
-	this.originalRemoveEvent(...args)
-} */
 export default Snowblind

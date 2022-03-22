@@ -38,7 +38,7 @@ export default class RenderAssignment {
 		 * Give access to parent element
 		 */
 		this.Object.parentElement = this._lastNode.parentNode;
-		var obj = this.Object.getNode()
+		var obj = this.Object.render()
 		if (obj instanceof HTMLElement) {
 			/**
 			 * Keep eventListeners and append directly as HTMLElement
