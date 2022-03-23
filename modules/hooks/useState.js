@@ -2,7 +2,7 @@ import {
 	UpdateDispatcher,
 	Observable,
 	ValueBinder
-} from "/src/shared-internals.js";
+} from "../../src/shared-internals.js";
 
 /**
  * Defines a state variable to be used for values inside the DOM, re-renders once it's value changes.

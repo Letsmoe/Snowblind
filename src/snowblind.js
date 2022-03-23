@@ -107,7 +107,7 @@ const Snowblind = {
 		onComponentDidUpdate(callback) {
 			this.didUpdateCallbacks.push(callback)
 		}
-		onComponentWillUnmount() {
+		onComponentWillUnmount(callback) {
 			this.willUnmountCallbacks.push(callback)
 		}
 
@@ -201,21 +201,58 @@ const Snowblind = {
 		remove(event, callback) {
 			document.removeEventListener(event, callback);
 		},
+	},
+	createElement: (type, props, children = []) => {
+		let element = document.createElement(type);
+		for (let name in props) {
+			if (Object.hasOwnProperty.call(props, name)) {
+				let value = props[name];
+				if (value !== null && value !== undefined) {
+					if (name == "text") {
+						element.innerText = value;
+					} else {
+						let trimmedName = name.substring(1).replace("@", "");
+						if (name[0] === "@") {
+							element.addEventListener(name, (e) => {
+								if (name[1] == "@" && e.target.isEqualNode(element)) {
+									value(element, e)
+								} else {
+									value(element, e)
+								}
+							})
+						} else if (name[0] === ".") {
+							element[trimmedName] = value;
+						} else if (name[0] === "?") {
+							if (value) {
+								element.setAttribute(trimmedName, value);
+							}
+						} else if (typeof value === "object") {
+							for (const i in value) {
+								element.setAttribute(i, value[i]);
+							}
+						} else {
+							element.setAttribute(name, value);
+						}
+					}
+				}
+			}
+		}
+
+		for (let node of children) {
+			if (typeof node === "function") {
+				// Check if a component reference was passed.
+				
+			} else if (node instanceof HTMLElement) {
+				element.appendChild(node);
+			}
+		}
+		return element;
 	}
 }
 
 window.addEventListener("load", () => {
 	Snowblind.renderAllIn()
 })
-
-
-function createElement(type, attributes) {
-	let element = document.createElement(type);
-	for (const key in attributes) {
-		element.setAttribute(key, attributes[key]);
-	}
-	return element;
-}
 
 /**
  * Inserts a given element after another.

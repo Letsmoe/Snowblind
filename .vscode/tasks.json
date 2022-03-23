@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "publish-patch",
+			"problemMatcher": [],
+			"label": "npm: publish-patch",
+			"detail": "npm version patch --no-git-tag-version && npm publish"
+		}
+	]
+}

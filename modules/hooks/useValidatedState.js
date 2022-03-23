@@ -1,4 +1,4 @@
-import {useState} from "/modules/hooks/useState.js";
+import {useState} from "./useState.js";
 
 /**
  * Tests on every new value, whether it matches a certain condition, useful for boolean checks.

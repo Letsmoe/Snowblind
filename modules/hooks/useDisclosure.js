@@ -1,4 +1,4 @@
-import {useState} from "/modules/hooks/useState.js";
+import {useState} from "./useState.js";
 
 /**
  * Hook to help with boolean checks, providing callbacks to handle modal open/close events.

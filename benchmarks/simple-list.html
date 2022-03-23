@@ -42,25 +42,27 @@
 		const [multiplier, setMultiplier] = useState(1);
 
 		const resetMultiplier = () => {
-			setMultiplier(2)
+			setMultiplier(multiplier + 2)
 		}
 
-		return () => html`<div class="App">
-			<button @click=${resetMultiplier}>Click Me</button>
-			<ul>
-			${
-				arrayGenerator(5000).map(i => {
-					return html`<ListItem key=${i} text=${i}></ListItem>`
-				})
-			}
-			${
-				arrayGenerator(5000).map(i => {
-					return html`<ListItem key=${i} text=${i + multiplier}></ListItem>`
-				})
-			}
-			</ul>
-		</div>`;
+		return () => {
+			const t1 = performance.now();
+			let x = html`<div class="App">
+					<button @click=${resetMultiplier}>Click Me</button>
+				<ul>
+				${
+					arrayGenerator(1000).map(i => {
+						return Snowblind.createElement("li", {text: i})
+					})
+				}
+				</ul>
+			</div>`
+			console.log(performance.now() - t1);
+			return x
+		};
+		
 	}
+	
 
 	window.expose([App, ListItem])
 

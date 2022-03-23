@@ -1,4 +1,4 @@
-import {useState} from "/modules/hooks/useState.js";
+import {useState} from "./useState.js";
 
 /**
  * Toggle through a list of options.

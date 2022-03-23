@@ -1,4 +1,4 @@
-import {useState} from "/modules/hooks/useState.js";
+import {useState} from "./useState.js";
 
 /**
  * Sort items into a queue to use later

@@ -7,3 +7,4 @@ export { useQueue } from "./useQueue.js";
 export { useToggle } from "./useToggle.js";
 export { useTransition } from "./useTransition.js";
 export { useValidatedState } from "./useValidatedState.js";
+export { useClickOutside } from "./useClickOutside.js";

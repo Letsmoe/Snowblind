@@ -246,9 +246,7 @@ function html(strings, ...vars) {
 					 */
 					const appendNonPrimitive = (value) => {
 						if (value instanceof HTMLElement || value instanceof SVGElement || value instanceof Text) {
-							var span = document.createElement("span")
-							span.insertAfter(children)
-							span.replaceWith(value)
+							value.insertAfter(children)
 						} else if (value instanceof HTMLCollection || value instanceof NodeList) {
 							var span = document.createElement("span")
 							span.insertAfter(children)
@@ -364,7 +362,7 @@ function elemIf(condition, element) {
  * Inserts a given element after another.
  * @param {HTMLElement} el The element given node should be inserted after.
  */
-HTMLElement.prototype.insertAfter = function (el) {
+HTMLElement.prototype.insertAfter = Text.prototype.insertAfter = function (el) {
 	if (el && el.parentNode) {
 		el.parentNode.insertBefore(this, el.nextSibling);
 	}

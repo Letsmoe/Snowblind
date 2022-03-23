@@ -1,6 +1,6 @@
 import {
 	UpdateDispatcher
-} from "/src/shared-internals.js";
+} from "../../src/shared-internals.js";
 
 function useTransition(obj, options) {
 	UpdateDispatcher.subscribe((component) => {

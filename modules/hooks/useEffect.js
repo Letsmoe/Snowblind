@@ -1,6 +1,6 @@
 import {
 	UpdateDispatcher
-} from "/src/shared-internals.js";
+} from "../../src/shared-internals.js";
 import deepCompare from "../utils/deepCompare.js";
 
 function useEffect(callback, stateConditional = []) {
@@ -13,20 +13,20 @@ function useEffect(callback, stateConditional = []) {
 	 * Exit the main event loop and enter a subscribe function to stagger execution of subscription.
 	 */
 	UpdateDispatcher.subscribe((value) => {
-		const runCallback = () => {
+		const runCallback = (node) => {
 			if (originalValues.length > 0) {
 				/**
 				 * Compare values on rerender.
 				 */
-				if (originalValues.filter((x, i) => !deepCompare(x, stateConditional[i].valueOf())).length > 0) {
-					callback();
+				if (originalValues.filter((x, i) => !deepCompare(x, stateConditional[i].valueOf())).length > 0 || originalValues.length == 0) {
+					callback(node);
 					originalValues = stateConditional.map(x => x.valueOf());
 				}
 			} else {
 				/**
 				 * Always call the passed callback
 				 */
-				callback()
+				callback(node)
 			}
 		}
 		value.onComponentDidMount(runCallback);

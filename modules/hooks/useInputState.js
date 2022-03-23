@@ -1,4 +1,4 @@
-import {useState} from "/modules/hooks/useState.js";
+import {useState} from "./useState.js";
 
 /**
  * Shorthand for the `event.currentTarget.value` syntax that would have to be used with inputs normally.

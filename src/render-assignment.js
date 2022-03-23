@@ -55,7 +55,7 @@ export default class RenderAssignment {
 		const activeElement = document.activeElement;
 		const selectionStart = activeElement.selectionStart;
 		const selectionEnd = activeElement.selectionEnd;
-		this._lastNode.replaceWith(Node);
+		this._lastNode.parentNode.replaceChild(Node, this._lastNode);
 		if (activeElement) {
 			// Check if there was a focused element and if it had a `key` attribute that might be used to re-focus it.
 			const key = activeElement.getAttribute("key");
@@ -117,13 +117,13 @@ export default class RenderAssignment {
 			/**
 			 * Component is only mounted AFTER the render finishes
 			 */
-			execArray(this.Object.didMountCallbacks)
+			execArray(this.Object.didMountCallbacks, this._Node)
 			this._renderIsFirstTime = false
 		} else {
 			/**
 			 * Run componentDidUpdate() method AFTER component rerender
 			 */
-			execArray(this.Object.didUpdateCallbacks)
+			execArray(this.Object.didUpdateCallbacks, this._Node)
 		}
 	}
 
@@ -151,4 +151,4 @@ export default class RenderAssignment {
 	}
 }
 
-const execArray = (arr) => arr.map(x => x());
+const execArray = (arr, ...args) => arr.map(x => x(...args));

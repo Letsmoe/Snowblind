@@ -18,7 +18,7 @@
 <body>
 	<script type="module">
 		import Snowblind from "./dist/snowblind.js";
-		import {useState, useToggle} from "./modules/hooks/index.js";
+		import {useState, useToggle, useEffect, useClickOutside} from "./modules/hooks/index.js";
 		import {html} from "./src/html.js";
 		import {UpdateDispatcher} from "./src/shared-internals.js"
 
@@ -32,8 +32,11 @@
 
 		const nestedComponent = (props) => {
 			const [value, toggle] = useToggle("purple", ["purple", "cyan", "blue"]);
+			const ref = useClickOutside(() => {
+				console.log("Clicked Outside");
+			})
 
-			return () => html`<div style="background-color: ${value};">
+			return () => html`<div style="background-color: ${value};" ref=${ref}>
 				${props.children}
 				<p>Hello From Nested Component ${"or not buddy"}</p>
 				<button @click=${toggle}>Change my color</button>
