@@ -63,7 +63,7 @@ function html(strings, ...vars) {
 				var realValue = vars[index];
 				var applyValue = "";
 
-				if (name === "ref" && realValue.constructor && realValue.constructor.name === "SnowblindRef") {
+				if (name === "ref" && realValue?.constructor?.name === "SnowblindRef") {
 					/**
 					 * User wants a reference to the current object
 					 */
@@ -302,17 +302,6 @@ function repeat(items, itemTemplate, keyFunction = () => {}) {
 	return arr
 }
 
-function classMap(classes) {
-	var classNames = []
-	for (const key in classes) {
-		const evaluationProperty = classes[key];
-		if (evaluationProperty) {
-			classNames.push(key)
-		}
-	}
-	return classNames.join(" ").trim();
-}
-
 /**
  * Takes an array of classes and returns them as string if they evaluate to true.
  * @param {Array} classes Array of classes to be checked
@@ -375,7 +364,6 @@ export {
 	repeat,
 	when,
 	choose,
-	classMap,
 	classArray,
 	range,
 	styleMap,

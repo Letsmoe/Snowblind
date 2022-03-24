@@ -17,12 +17,12 @@ import {UpdateDispatcher, exposedComponents, SnowblindChild} from "./shared-inte
  * @param {Array<String>} optNames Optional list of names if they shall not be auto-retrieved from the components class name.
  */
 window.expose = function (components, optNames) {
-	components = Array.from([components]).flat();
 	optNames = Array.from([optNames]).flat()
 
-	for (let i = 0; i < components.length; i++) {
-		const component = components[i];
-		var name = (typeof optNames[i] === "undefined" ? component.name : optNames[i]).toLowerCase();
+	var i = 0;
+	for (const key in components) {
+		const component = components[key];
+		var name = (typeof optNames[i] === "undefined" ? key : optNames[i]).toLowerCase();
 		exposedComponents[name] = component;
 	}
 }
@@ -39,7 +39,7 @@ const Snowblind = {
 			}, options)
 
 			this.createdReferences = {} // All references to nodes created with (useRef())
-			this.globalSelf = exposedComponents[this.constructor.name.toLowerCase()];
+			this.globalSelf = exposedComponents[generator.name.toLowerCase()];
 			/**
 			 * Convert expected properties
 			 */
@@ -85,7 +85,11 @@ const Snowblind = {
 			this.props = this._Observer._value
 
 			this.Renderer = new RenderAssignment(this, options)
-			this._generatorFunction = generator(props)
+			/**
+			 * Try to find a ref to the item.
+			 */
+			const ref = options.replace.isReferenceTo;
+			this._generatorFunction = generator(props, ref)
 			/**
 			 * Write component to the UpdateDispatcher to be captured by any hooks, close immediately after.
 			 */

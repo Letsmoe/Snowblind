@@ -18,9 +18,10 @@
 <body>
 	<script type="module">
 		import Snowblind from "./dist/snowblind.js";
-		import {useState, useToggle, useEffect, useClickOutside} from "./modules/hooks/index.js";
+		import {useState, useToggle, useEffect, useClickOutside, useRef} from "./modules/hooks/index.js";
 		import {html} from "./src/html.js";
 		import {UpdateDispatcher} from "./src/shared-internals.js"
+		import {Space} from "./components/index.js";
 
 		function component(props) {
 			const [value, setValue] = useState(0);
@@ -36,25 +37,26 @@
 				console.log("Clicked Outside");
 			})
 
+			const spaceRef = useRef(null);
+
 			return () => {
-				console.log(props.children);
 				return html`<div style="background-color: ${value};" ref=${ref}>
 					${props.children}
+					<Space ref=${spaceRef}></Space>
 					<p>Hello From Nested Component ${"or not buddy"}</p>
 					<button @click=${toggle}>Change my color</button>
 				</div>`
 			}
 		}
 
-		window.expose([component, nestedComponent]);
+		window.expose({component, nestedComponent});
 	</script>
 </body>
 
 <nestedComponent>
 	<component></component>
+	<p>Hello <Space w="xl"></Space></p>
 </nestedComponent>
-<ClassComponent></ClassComponent>
-<component></component>
 <!-- <script type="module">
 	const drawPoint = (x,y) => {
 		const span = document.createElement("span");

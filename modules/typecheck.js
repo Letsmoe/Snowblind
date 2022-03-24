@@ -69,6 +69,12 @@ const propTypes = new Proxy({
 			}
 		}
 	},
+	or: function (...fns) {
+		return (testObj) => fns.map(x => x(testObj)).indexOf(true) > -1
+	},
+	and: function (...fns) {
+		return (testObj) => fns.map(x => x(testObj)).indexOf(false) == -1
+	},
 	customProp: (Func) => {
 		return Func
 	},
