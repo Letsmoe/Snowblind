@@ -9,7 +9,7 @@ import {
 
 export {useRef, useState, useEffect, useTransition} from "../modules/hooks/index.js";
 
-import {UpdateDispatcher, exposedComponents} from "./shared-internals.js"
+import {UpdateDispatcher, exposedComponents, SnowblindChild} from "./shared-internals.js"
 
 /**
  * Exposes a component to be grabbed by the initial render process.
@@ -79,9 +79,7 @@ const Snowblind = {
 			 * Initialize empty dependencies object for useEffect calls
 			 */
 			if (options.replace instanceof HTMLElement) {
-				props.children = Array.from(options.replace.childNodes);
-				this.originalElement = options.replace
-				this.originalChildren = Array.from(options.replace.childNodes);
+				props.children = Array.from(options.replace.childNodes).map(x => new SnowblindChild(x));
 			}
 			this._Observer = new Observer(props || {})
 			this.props = this._Observer._value

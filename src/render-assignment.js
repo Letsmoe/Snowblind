@@ -1,4 +1,5 @@
 import Snowblind from "./snowblind.js"
+import {childrenObjects} from "./shared-internals.js"
 
 export default class RenderAssignment {
 	constructor(obj, options = {}) {
@@ -37,7 +38,6 @@ export default class RenderAssignment {
 		/**
 		 * Give access to parent element
 		 */
-		this.Object.parentElement = this._lastNode.parentNode;
 		var obj = this.Object.render()
 		if (obj instanceof HTMLElement) {
 			/**
@@ -55,7 +55,11 @@ export default class RenderAssignment {
 		const activeElement = document.activeElement;
 		const selectionStart = activeElement.selectionStart;
 		const selectionEnd = activeElement.selectionEnd;
-		this._lastNode.parentNode.replaceChild(Node, this._lastNode);
+		let snowblindChildID;
+		if ((snowblindChildID = this._lastNode.getAttribute("data-is-snowblind-child"))) {
+			childrenObjects[snowblindChildID].setElement(this._Node)
+		}
+		this._lastNode.replaceWith(this._Node);
 		if (activeElement) {
 			// Check if there was a focused element and if it had a `key` attribute that might be used to re-focus it.
 			const key = activeElement.getAttribute("key");

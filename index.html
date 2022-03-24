@@ -22,11 +22,11 @@
 		import {html} from "./src/html.js";
 		import {UpdateDispatcher} from "./src/shared-internals.js"
 
-		const component = () => {
+		function component(props) {
 			const [value, setValue] = useState(0);
 
 			return () => {
-				return html`<button @click=${() => setValue(value + 1)}>Value: ${value}</button>`
+				return html`<div><button @click=${() => setValue(value + 1)}>Value: ${value}</button></div>`
 			}
 		}
 
@@ -36,11 +36,14 @@
 				console.log("Clicked Outside");
 			})
 
-			return () => html`<div style="background-color: ${value};" ref=${ref}>
-				${props.children}
-				<p>Hello From Nested Component ${"or not buddy"}</p>
-				<button @click=${toggle}>Change my color</button>
-			</div>`
+			return () => {
+				console.log(props.children);
+				return html`<div style="background-color: ${value};" ref=${ref}>
+					${props.children}
+					<p>Hello From Nested Component ${"or not buddy"}</p>
+					<button @click=${toggle}>Change my color</button>
+				</div>`
+			}
 		}
 
 		window.expose([component, nestedComponent]);

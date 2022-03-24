@@ -46,10 +46,25 @@ class ValueBinder {
 	}
 };
 
+class SnowblindChild {
+	constructor(el) {
+		this.ID = (Math.random() + 1).toString(36).substring(2);
+		childrenObjects[this.ID] = this;
+		this.setElement(el)
+	}
 
+	setElement(el) {
+		this.element = el;
+		if (this.element.setAttribute) {
+			this.element.setAttribute("data-is-snowblind-child", this.ID);
+		}
+	}
+}
+
+const childrenObjects = {};
 const exposedComponents = {};
 const UpdateDispatcher = new Observable();
 
 export {
-	UpdateDispatcher, ValueBinder, Observable, exposedComponents
+	UpdateDispatcher, ValueBinder, Observable, exposedComponents, SnowblindChild, childrenObjects
 }

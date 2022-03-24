@@ -1,5 +1,5 @@
 import Snowblind from "./snowblind.js";
-import {ValueBinder, exposedComponents} from "./shared-internals.js"
+import {ValueBinder, SnowblindChild} from "./shared-internals.js"
 
 function html(strings, ...vars) {
 
@@ -245,7 +245,9 @@ function html(strings, ...vars) {
 					 * Object is no primitive, handle differently
 					 */
 					const appendNonPrimitive = (value) => {
-						if (value instanceof HTMLElement || value instanceof SVGElement || value instanceof Text) {
+						if (value instanceof SnowblindChild) {
+							appendNonPrimitive(value.element)
+						} else if (value instanceof HTMLElement || value instanceof SVGElement || value instanceof Text) {
 							value.insertAfter(children)
 						} else if (value instanceof HTMLCollection || value instanceof NodeList) {
 							var span = document.createElement("span")
