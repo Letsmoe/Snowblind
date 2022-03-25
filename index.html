@@ -42,8 +42,8 @@
 			return () => {
 				return html`<div style="background-color: ${value};" ref=${ref}>
 					${props.children}
-					<Space ref=${spaceRef}></Space>
-					<p>Hello From Nested Component ${"or not buddy"}</p>
+					
+					<p>Hello From Nested Component <Space w="xl"></Space> ${"or not buddy"}</p>
 					<button @click=${toggle}>Change my color</button>
 				</div>`
 			}

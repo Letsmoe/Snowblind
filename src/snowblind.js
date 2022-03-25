@@ -9,7 +9,7 @@ import {
 
 export {useRef, useState, useEffect, useTransition} from "../modules/hooks/index.js";
 
-import {UpdateDispatcher, exposedComponents, SnowblindChild} from "./shared-internals.js"
+import {UpdateDispatcher, exposedComponents, SnowblindChild, Observable} from "./shared-internals.js"
 
 /**
  * Exposes a component to be grabbed by the initial render process.
@@ -116,6 +116,22 @@ const Snowblind = {
 		render(...args) {
 			return this._generatorFunction()
 		}
+	},
+	createContext(initialValue) {
+		if (typeof initialValue !== 'object') {
+			throw new TypeError("`createContext` may only be used with objects.");
+		}
+
+		// Bind the object to an observable to update all references later on.
+		const provider = new Observable(initialValue);
+
+		const changeCallback = (obj) => {
+			provider.next(obj);
+		}
+
+		// Observe object changes with an observer
+		const newObject = new Observer(initialValue, changeCallback);
+		return [newObject._value, provider];
 	},
 	/**
 	 * Searches the DOMTree recursively for components, this will ensure parent nodes will be rendered and their children will be included in the render afterwards

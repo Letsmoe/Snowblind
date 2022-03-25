@@ -5,7 +5,7 @@ class Observer {
 	 * Instantiates a proxy based on a passed object supporting rerendering of components.
 	 * @param {object} value The object a proxy should be attached to.
 	 */
-	constructor(value) {
+	constructor(value, callback = () => {}) {
 		this.boundRender = false;
 		const _Handler = {
 			get(target, key) {
@@ -36,6 +36,7 @@ class Observer {
 						this.boundRender.Render()
 					})
 				}
+				callback(x, y, z);
 				return true
 			}
 		}

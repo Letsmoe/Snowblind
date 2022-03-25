@@ -1,17 +1,18 @@
 import {html} from "../../src/html.js";
 import {propTypes} from "../../modules/typecheck.js";
-import {SIZES} from "../defaults.js";
-import { forwardRef } from "../../modules/hooks/index.js";
+import {SIZES, themeContext} from "../defaults.js";
+import { forwardRef, useContext } from "../../modules/hooks/index.js";
 
 const Space = forwardRef((props, ref) => {
-	/*
-	*sx=${[(theme) => {
-		const width = theme.fn.size({size: w, sizes: theme.spacing})
-		const height = theme.fn.size({size: h, sizes: theme.spacing})
+	const theme = useContext(themeContext);
+	
+	return () => {
+		const width = theme.fn.size({size: props.w, sizes: theme.spacing})
+		const height = theme.fn.size({size: props.h, sizes: theme.spacing})
+		const display = "inline-block";
 
-		return {width, height, minWidth, minHeight}
-	}]}*/
-	return () => html`<span ref=${ref}></span>`
+		return html`<span ref=${ref} sx=${{width, height, display}}></span>`
+	}
 })
 
 Space.propTypes = {

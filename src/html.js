@@ -208,7 +208,7 @@ function html(strings, ...vars) {
 			})
 			if (["@", ".", "?", "!"].indexOf(nameStart) !== -1 || name.match(MATCH_MULTI_CHAR)) {
 				node.removeAttribute(name)
-			} else if (name !== "ref") {
+			} else if (name !== "ref" && name !== "sx") {
 				node.setAttribute(name, value)
 			}
 		}
@@ -254,7 +254,7 @@ function html(strings, ...vars) {
 							span.insertAfter(children)
 							span.replaceWith(...value)
 						} else if (Array.isArray(value)) {
-							value.reverse().map(x => appendNonPrimitive(x))
+							value.slice().reverse().map(x => appendNonPrimitive(x))
 						} else {
 							if (value !== Object(value) || value instanceof ValueBinder) {
 								/**
