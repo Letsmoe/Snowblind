@@ -1,3 +1,5 @@
+import { useState } from "./useState";
+
 function useFullscreen() {
 	const [fullscreen, toggle] = useState(false);
 
@@ -5,5 +7,5 @@ function useFullscreen() {
 		toggle(!fullscreen);
 	}
 
-	return {ref, toggleFullscreen, fullscreen}
+	return [fullscreen, toggleFullscreen];
 }

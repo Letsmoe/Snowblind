@@ -4,17 +4,19 @@ import {
 	ValueBinder
 } from "../../src/shared-internals.js";
 
+import {Component} from "../../src/types"
+
 /**
  * Defines a state variable to be used for values inside the DOM, re-renders once it's value changes.
- * @param {any} state A value used as a state to the current render cycle.
- * @param {boolean} bind Whether to bind the state to a render instance
- * @returns {Array<any, function>} A pair of getter and setter to access the state.
+ * @param state A value used as a state to the current render cycle.
+ * @param bind Whether to bind the state to a render instance
+ * @returns A pair of getter and setter to access the state.
  */
-function useState(state, bind = true) {
+function useState(state : any, bind: boolean = true) : [ValueBinder, Function] {
 	const obs = new Observable(state);
 	var value = new ValueBinder(obs)
 	if (bind === true) {
-		UpdateDispatcher.subscribe((component) => {
+		UpdateDispatcher.subscribe((component : Component) => {
 			const renderer = component.Renderer;
 			obs.subscribe(() => {
 				renderer.Render();
@@ -22,7 +24,7 @@ function useState(state, bind = true) {
 		})
 	}
 
-	const _callback = (newState) => {
+	const _callback = (newState : any) => {
 		if (typeof newState === 'function') {
 			// Execute a function to get the next values;
 			newState = newState();

@@ -1,9 +1,10 @@
 import {
 	UpdateDispatcher
 } from "../../src/shared-internals.js";
+import { Component } from "../../src/types.js";
 import deepCompare from "../utils/deepCompare.js";
 
-function useEffect(callback, stateConditional = []) {
+function useEffect(callback : Function, stateConditional = []) {
 	/**
 	 * Store original values to compare against later on, if one updated render the component again.
 	 */
@@ -12,8 +13,8 @@ function useEffect(callback, stateConditional = []) {
 	/**
 	 * Exit the main event loop and enter a subscribe function to stagger execution of subscription.
 	 */
-	UpdateDispatcher.subscribe((value) => {
-		const runCallback = (node) => {
+	UpdateDispatcher.subscribe((value : Component) => {
+		const runCallback = (node : any) => {
 			if (originalValues.length > 0) {
 				/**
 				 * Compare values on rerender.

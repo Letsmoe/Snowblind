@@ -1,14 +1,18 @@
+import RenderAssignment from "./render-assignment";
+
 const isProxy = Symbol("");
 
 class Observer {
+	public _value: any;
+	boundRender: RenderAssignment;
+	debounce: any;
 	/**
 	 * Instantiates a proxy based on a passed object supporting rerendering of components.
-	 * @param {object} value The object a proxy should be attached to.
+	 * @param value The object a proxy should be attached to.
 	 */
-	constructor(value, callback = () => {}) {
-		this.boundRender = false;
+	constructor(value: object, callback : Function = () => {}) {
 		const _Handler = {
-			get(target, key) {
+			get(target : object, key : any) {
 				if (key === isProxy) return true;
 
 				const prop = target[key];
@@ -26,7 +30,7 @@ class Observer {
 
 				return target[key];
 			},
-			set: (x, y, z) => {
+			set: (x : object, y : any, z : any) => {
 				x[y] = z;
 				if (this.boundRender) {
 					if (this.debounce) {

@@ -1,0 +1,1 @@
+{"version":3,"file":"forwardRef.js","sourceRoot":"","sources":["../../../modules/hooks/forwardRef.ts"],"names":[],"mappings":"AAEA,SAAS,UAAU,CAAC,QAAmB;IACtC,OAAO,CAAC,KAAc,EAAE,GAAkB,EAAE,EAAE;QAC7C,OAAO,QAAQ,CAAC,KAAK,EAAE,GAAG,CAAC,CAAA;IAC5B,CAAC,CAAA;AACF,CAAC;AAED,OAAO,EAAC,UAAU,EAAC,CAAA"}

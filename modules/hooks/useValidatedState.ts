@@ -1,12 +1,13 @@
+import { ValueBinder } from "../../src/shared-internals.js";
 import {useState} from "./useState.js";
 
 /**
  * Tests on every new value, whether it matches a certain condition, useful for boolean checks.
- * @param {any} initialValue The value to initialize with
- * @param {function} validation A function that checks whether a new value passes the validation
+ * @param initialValue The value to initialize with
+ * @param validation A function that checks whether a new value passes the validation
  * @returns [{value, lastValidValue, valid}, changeValue]
  */
-function useValidatedState(initialValue, validation) {
+function useValidatedState(initialValue : any, validation : Function) : [{value: ValueBinder, lastValidValue: ValueBinder, valid: ValueBinder}, Function] {
 	const [value, setValue] = useState(initialValue);
 	const [lastValidValue, setLastValidValue] = useState(validation(initialValue) ? initialValue : undefined, false);
 	const [valid, setValid] = useState(validation(initialValue), false)

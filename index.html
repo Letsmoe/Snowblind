@@ -18,16 +18,18 @@
 <body>
 	<script type="module">
 		import Snowblind from "./dist/snowblind.js";
-		import {useState, useToggle, useEffect, useClickOutside, useRef} from "./modules/hooks/index.js";
+		import {useState, useToggle, useEffect, useClickOutside, useRef, useMemo} from "./modules/hooks/index.js";
 		import {html} from "./src/html.js";
 		import {UpdateDispatcher} from "./src/shared-internals.js"
 		import {Space} from "./components/index.js";
 
 		function component(props) {
 			const [value, setValue] = useState(0);
+			const fish = useMemo(() => value * 4, [value])
+
 
 			return () => {
-				return html`<div><button @click=${() => setValue(value + 1)}>Value: ${value}</button></div>`
+				return html`<div><button @click=${() => setValue(value + 1)}>Value: ${fish}</button></div>`
 			}
 		}
 
