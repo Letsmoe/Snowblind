@@ -17,10 +17,8 @@
 </style>
 <body>
 	<script type="module">
-		import Snowblind from "./dist/snowblind.js";
-		import {useState, useToggle, useEffect, useClickOutside, useRef, useMemo} from "./modules/hooks/index.js";
-		import {html} from "./src/html.js";
-		import {UpdateDispatcher} from "./src/shared-internals.js"
+		import {Snowblind, html, useState, useRef, useEffect} from "./ts-out/src/index.js";
+		import {useToggle, useClickOutside, useMemo} from "./ts-out/modules/hooks/index.js";
 		import {Space} from "./components/index.js";
 
 		function component(props) {

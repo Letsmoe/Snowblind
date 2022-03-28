@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"lib": ["DOM", "es2020"],
+		"outDir": "../lib/",
+		"noImplicitAny": false, 
+		"module": "es6",
+		"target": "ES2015",
+		"allowJs": true,
+		"moduleResolution": "node"
+	},
+	"include": ["src/**/*", "../node_modules/**/*"],
+	"compileOnSave": true
+}
