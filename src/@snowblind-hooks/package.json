@@ -1,6 +1,6 @@
 {
 	"name": "@snowblind/hooks",
-	"version": "0.0.1",
+	"version": "0.0.3",
 	"description": "A library full of hooks usable in a Snowblind aware context",
 	"main": "index.js",
 	"directories": {
@@ -9,15 +9,18 @@
 	},
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"build": "tsc --project ./src/tsconfig.json && webpack --config=webpack.config.js"
+		"build": "tsc --project ./src/tsconfig.json && webpack --config=webpack.config.js",
+		"publish-minor": "npm run build && npm version minor --no-git-tag-version && npm publish",
+		"publish-patch": "npm run build && npm version patch --no-git-tag-version && npm publish",
+		"publish-major": "npm run build && npm version major --no-git-tag-version && npm publish"
 	},
 	"keywords": [
 		"hooks",
 		"snowblind"
 	],
-	"author": "Letsmoe",
+	"author": "letsmoe",
 	"license": "MIT",
 	"devDependencies": {
-		"@snowblind/core": "^1.1.2"
+		"@snowblind/core": "^1.1.8"
 	}
 }

@@ -1,14 +1,21 @@
 import RenderAssignment from "./render-assignment.js";
 import { Observer } from "./observer.js";
+import { SnowblindElement } from "./types";
 export { useRef, useState, useEffect, } from "./hooks/index";
 import { SnowblindChild } from "./shared-internals.js";
+declare global {
+    interface Window {
+        typeCheck: (props: {}, propTypes: {}, defaultProps: {}) => never | {};
+    }
+}
+declare function expose(components: any, optNames?: string[]): void;
 declare const Snowblind: {
     Component: {
         new (props: {
             children?: SnowblindChild[];
         }, generator: Function, options?: {
             hasTheme: boolean;
-            replace: HTMLElement;
+            replace: SnowblindElement;
         }): {
             hasTheme: any;
             _maxCopies: number;
@@ -42,5 +49,5 @@ declare const Snowblind: {
     };
     createElement: (type: string, props: Object, children?: any[]) => HTMLElement;
 };
-export { Snowblind };
+export { Snowblind, expose };
 //# sourceMappingURL=snowblind.d.ts.map

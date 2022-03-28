@@ -1,3 +1,3 @@
-declare function html(strings: string[], ...vars: any[]): Element;
+declare function html(strings: TemplateStringsArray, ...vars: any[]): Element;
 export { html };
 //# sourceMappingURL=html.d.ts.map

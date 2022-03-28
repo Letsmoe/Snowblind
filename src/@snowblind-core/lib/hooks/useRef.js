@@ -1,9 +1,5 @@
+import { SnowblindRef } from "../shared-internals";
 function useRef() {
-    class SnowblindRef {
-        constructor() {
-            this.current;
-        }
-    }
     return new SnowblindRef();
 }
 export { useRef };

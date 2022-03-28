@@ -7,7 +7,7 @@ declare class Observable {
     complete(): void;
     restore(): void;
 }
-declare class SnowblindRef implements ISnowblindRef {
+declare class SnowblindRef {
     current: HTMLElement;
     constructor();
 }
@@ -24,8 +24,9 @@ declare class SnowblindChild {
     constructor(el: HTMLElement);
     setElement(el: HTMLElement): void;
 }
+declare const NodeInsertAfter: (newNode: any, current: any) => void;
 declare const childrenObjects: {};
 declare const exposedComponents: {};
 declare const UpdateDispatcher: Observable;
-export { UpdateDispatcher, ValueBinder, Observable, exposedComponents, SnowblindChild, childrenObjects, SnowblindRef };
+export { UpdateDispatcher, ValueBinder, Observable, exposedComponents, SnowblindChild, childrenObjects, SnowblindRef, NodeInsertAfter };
 //# sourceMappingURL=shared-internals.d.ts.map

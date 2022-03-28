@@ -2,7 +2,6 @@ export { useInputState } from "./useInputState";
 export { useDisclosure } from "./useDisclosure";
 export { useQueue } from "./useQueue";
 export { useToggle } from "./useToggle";
-export { useTransition } from "./useTransition";
 export { useValidatedState } from "./useValidatedState";
 export { useClickOutside } from "./useClickOutside";
 export { forwardRef } from "./forwardRef";

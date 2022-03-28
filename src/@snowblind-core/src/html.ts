@@ -1,7 +1,8 @@
 import {Snowblind} from "./snowblind";
-import {ValueBinder, SnowblindChild} from "./shared-internals.js"
+import {ValueBinder, SnowblindChild, NodeInsertAfter} from "./shared-internals.js"
+import { SnowblindElement } from "./types";
 
-function html(strings : string[], ...vars : any[]) {
+function html(strings : TemplateStringsArray, ...vars : any[]) {
 
 	function applyEvent(elem : HTMLElement, trigger : string, event : Function, onlyThisNode : boolean) {
 		elem.addEventListener(trigger, (e) => {
@@ -36,7 +37,7 @@ function html(strings : string[], ...vars : any[]) {
 
 	const walker = document.createTreeWalker(template.content, 1, null);
 
-	let node : HTMLElement;
+	let node : SnowblindElement;
 	let foundInputs = 0;
 
 	while ((node = (walker.nextNode() as HTMLElement)) !== null) {
@@ -287,16 +288,6 @@ function html(strings : string[], ...vars : any[]) {
 	Snowblind.renderAllIn(child as HTMLElement)
 	return child
 }
-/**
- * Inserts a given element after another.
- * @param newNode The node to be inserted after
- * @param current The element given node should be inserted after.
- */
-const NodeInsertAfter = function (newNode : any, current : any) : void {
-	if (current && current.parentNode) {
-		current.parentNode.insertBefore(newNode, current.nextSibling);
-	}
-};
 
 export {
 	html

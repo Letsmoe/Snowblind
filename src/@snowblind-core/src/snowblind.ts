@@ -1,5 +1,6 @@
 import RenderAssignment from "./render-assignment.js";
 import { Observer } from "./observer.js";
+import {SnowblindComponent, SnowblindElement} from "./types"
 
 export {
 	useRef,
@@ -11,17 +12,27 @@ import {
 	UpdateDispatcher,
 	exposedComponents,
 	SnowblindChild,
-	Observable,
+	Observable
 } from "./shared-internals.js";
+
+declare global {
+	interface Window {
+		typeCheck: (
+			props: {},
+			propTypes: {},
+			defaultProps: {}
+		) => never | {};
+	}
+}
 
 /**
  * Exposes a component to be grabbed by the initial render process.
- * @param {Array<Snowblind.Component>} components List of components to add
- * @param {Array<String>} optNames Optional list of names if they shall not be auto-retrieved from the components class name.
+ * @param components List of components to add
+ * @param optNames Optional list of names if they shall not be auto-retrieved from the components class name.
  */
-window.expose = function (
-	components: Array<SnowblindComponent>,
-	optNames: Array<string>
+function expose(
+	components: any,
+	optNames: string[] = []
 ) {
 	optNames = Array.from([optNames]).flat();
 
@@ -53,7 +64,7 @@ const Snowblind = {
 		constructor(
 			props: { children?: SnowblindChild[] },
 			generator: Function,
-			options: { hasTheme: boolean; replace: HTMLElement } = {
+			options: { hasTheme: boolean; replace: SnowblindElement } = {
 				hasTheme: false,
 				replace: undefined,
 			}
@@ -260,14 +271,4 @@ const Snowblind = {
 window.addEventListener("load", () => {
 	Snowblind.renderAllIn();
 });
-
-/**
- * Inserts a given element after another.
- * @param el The element given node should be inserted after.
- */
-HTMLElement.prototype.insertAfter = function (el: HTMLElement) {
-	if (el && el.parentNode) {
-		el.parentNode.insertBefore(this, el.nextSibling);
-	}
-};
-export {Snowblind};
+export {Snowblind, expose};

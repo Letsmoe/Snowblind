@@ -56,8 +56,13 @@ class SnowblindChild {
         }
     }
 }
+const NodeInsertAfter = function (newNode, current) {
+    if (current && current.parentNode) {
+        current.parentNode.insertBefore(newNode, current.nextSibling);
+    }
+};
 const childrenObjects = {};
 const exposedComponents = {};
 const UpdateDispatcher = new Observable();
-export { UpdateDispatcher, ValueBinder, Observable, exposedComponents, SnowblindChild, childrenObjects, SnowblindRef };
+export { UpdateDispatcher, ValueBinder, Observable, exposedComponents, SnowblindChild, childrenObjects, SnowblindRef, NodeInsertAfter };
 //# sourceMappingURL=shared-internals.js.map

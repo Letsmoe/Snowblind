@@ -3,6 +3,7 @@ import {
 	Observable,
 	ValueBinder
 } from "../shared-internals.js";
+import {SnowblindComponent} from "../types"
 
 /**
  * Defines a state variable to be used for values inside the DOM, re-renders once it's value changes.

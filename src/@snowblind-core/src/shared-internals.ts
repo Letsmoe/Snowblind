@@ -29,7 +29,7 @@ class Observable {
 	}
 }
 
-class SnowblindRef implements ISnowblindRef {
+class SnowblindRef {
 	public current : HTMLElement;
 	constructor() {
 		this.current;
@@ -74,10 +74,21 @@ class SnowblindChild {
 	}
 }
 
+/**
+ * Inserts a given element after another.
+ * @param newNode The node to be inserted after
+ * @param current The element given node should be inserted after.
+ */
+const NodeInsertAfter = function (newNode : any, current : any) : void {
+	if (current && current.parentNode) {
+		current.parentNode.insertBefore(newNode, current.nextSibling);
+	}
+};
+
 const childrenObjects = {};
 const exposedComponents = {};
 const UpdateDispatcher = new Observable();
 
 export {
-	UpdateDispatcher, ValueBinder, Observable, exposedComponents, SnowblindChild, childrenObjects, SnowblindRef
+	UpdateDispatcher, ValueBinder, Observable, exposedComponents, SnowblindChild, childrenObjects, SnowblindRef, NodeInsertAfter
 }

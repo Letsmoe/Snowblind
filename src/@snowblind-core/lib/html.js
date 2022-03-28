@@ -1,5 +1,5 @@
 import { Snowblind } from "./snowblind";
-import { ValueBinder, SnowblindChild } from "./shared-internals.js";
+import { ValueBinder, SnowblindChild, NodeInsertAfter } from "./shared-internals.js";
 function html(strings, ...vars) {
     function applyEvent(elem, trigger, event, onlyThisNode) {
         elem.addEventListener(trigger, (e) => {
@@ -225,10 +225,5 @@ function html(strings, ...vars) {
     Snowblind.renderAllIn(child);
     return child;
 }
-const NodeInsertAfter = function (newNode, current) {
-    if (current && current.parentNode) {
-        current.parentNode.insertBefore(newNode, current.nextSibling);
-    }
-};
 export { html };
 //# sourceMappingURL=html.js.map

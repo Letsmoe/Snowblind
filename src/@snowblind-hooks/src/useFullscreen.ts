@@ -9,3 +9,5 @@ function useFullscreen() {
 
 	return [fullscreen, toggleFullscreen];
 }
+
+export {useFullscreen}

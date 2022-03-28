@@ -1,5 +1,6 @@
 import {Snowblind} from "./snowblind.js"
 import {childrenObjects} from "./shared-internals.js"
+import {SnowblindComponent} from "./types"
 
 export default class RenderAssignment {
 	_wasDestroyed: boolean;

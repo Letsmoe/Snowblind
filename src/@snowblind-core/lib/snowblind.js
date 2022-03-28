@@ -1,8 +1,8 @@
 import RenderAssignment from "./render-assignment.js";
 import { Observer } from "./observer.js";
 export { useRef, useState, useEffect, } from "./hooks/index";
-import { UpdateDispatcher, exposedComponents, SnowblindChild, Observable, } from "./shared-internals.js";
-window.expose = function (components, optNames) {
+import { UpdateDispatcher, exposedComponents, SnowblindChild, Observable } from "./shared-internals.js";
+function expose(components, optNames = []) {
     optNames = Array.from([optNames]).flat();
     var i = 0;
     for (const key in components) {
@@ -10,7 +10,8 @@ window.expose = function (components, optNames) {
         var name = (typeof optNames[i] === "undefined" ? key : optNames[i]).toLowerCase();
         exposedComponents[name] = component;
     }
-};
+}
+;
 const Snowblind = {
     Component: class Component {
         constructor(props, generator, options = {
@@ -164,10 +165,5 @@ const Snowblind = {
 window.addEventListener("load", () => {
     Snowblind.renderAllIn();
 });
-HTMLElement.prototype.insertAfter = function (el) {
-    if (el && el.parentNode) {
-        el.parentNode.insertBefore(this, el.nextSibling);
-    }
-};
-export { Snowblind };
+export { Snowblind, expose };
 //# sourceMappingURL=snowblind.js.map
