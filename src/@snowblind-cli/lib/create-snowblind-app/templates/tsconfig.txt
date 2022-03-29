@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		"outDir": "../lib/",
+		"declaration": true,
+		"declarationMap": true,
+		"lib": ["DOM", "es2020"],
+		"target": "es2015",
+		"module": "ES6",
+		"moduleResolution": "node"
+	},
+	"compileOnSave": false
+}

@@ -1,0 +1,18 @@
+import { Snowblind, html, useState, useEffect } from "@snowblind/core";
+import { propTypes } from "@snowblind/typecheck";
+
+function MyComponent(props) {
+	const languages = ["hola", "salut", "moin", "ciao", "nǐ hǎo", "olá", "privet", "hej", "hoi", "hey"]
+
+	var i = 0;
+	const [lang, setLang] = useState(languages[i]);
+	setInterval(() => {
+		i++
+		setLang(i >= languages.length ? languages[(i = 0)] : languages[i]);
+	}, 2000)
+
+	return () => html`<div>
+		<img src="/img/snowblind.svg" width="450">
+		<p>${lang}! This is my first `Snowblind` Component!</p>
+	</div>`;
+}

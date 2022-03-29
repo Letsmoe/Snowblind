@@ -1,0 +1,9 @@
+{
+	"compilerOptions": {
+		"outDir": "../lib/",
+		"lib": ["DOM", "es2020"],
+		"module": "commonjs",
+		"moduleResolution": "node"
+	},
+	"compileOnSave": true
+}
