@@ -1,4 +1,4 @@
-import { SnowblindRef } from "../shared-internals";
+import { SnowblindRef } from "../shared-internals.js";
 function useRef() {
     return new SnowblindRef();
 }

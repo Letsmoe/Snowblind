@@ -1,4 +1,4 @@
-export { useState } from "./useState";
-export { useEffect } from "./useEffect";
-export { useRef } from "./useRef";
-export { useTransition } from "./useTransition";
+export { useState } from "./useState.js";
+export { useEffect } from "./useEffect.js";
+export { useRef } from "./useRef.js";
+export { useTransition } from "./useTransition.js";

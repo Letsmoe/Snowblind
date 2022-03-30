@@ -1,6 +1,6 @@
 import RenderAssignment from "./render-assignment.js";
 import { Observer } from "./observer.js";
-export { useRef, useState, useEffect, } from "./hooks/index";
+export { useRef, useState, useEffect, } from "./hooks/index.js";
 import { UpdateDispatcher, exposedComponents, SnowblindChild, Observable } from "./shared-internals.js";
 function expose(components, optNames = []) {
     optNames = Array.from([optNames]).flat();

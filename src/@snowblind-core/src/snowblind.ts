@@ -1,12 +1,12 @@
 import RenderAssignment from "./render-assignment.js";
 import { Observer } from "./observer.js";
-import {SnowblindComponent, SnowblindElement} from "./types"
+import {SnowblindComponent, ISnowblindElement} from "./types"
 
 export {
 	useRef,
 	useState,
 	useEffect,
-} from "./hooks/index";
+} from "./hooks/index.js";
 
 import {
 	UpdateDispatcher,
@@ -64,7 +64,7 @@ const Snowblind = {
 		constructor(
 			props: { children?: SnowblindChild[] },
 			generator: Function,
-			options: { hasTheme: boolean; replace: SnowblindElement } = {
+			options: { hasTheme: boolean; replace: ISnowblindElement } = {
 				hasTheme: false,
 				replace: undefined,
 			}

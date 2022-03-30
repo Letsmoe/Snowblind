@@ -29,21 +29,37 @@ var ROOT_FOLDER = new Folder(argv._[0]);
 /**
  * Files
  */
+var packageJSONContent = {
+    "name": argv._[0],
+    "version": "0.0.1",
+    "description": "",
+    "private": true,
+    "dependencies": {},
+    "scripts": {
+        "start": "start",
+        "build": "build",
+        "test": "test"
+    },
+    "author": "",
+    "license": "MIT",
+    "devDependencies": {}
+};
 var templatePath = path.join(__dirname, "./templates");
-var testFiles = [];
 var _src = new Folder("src", [
     new SFile("index.ts", readFile(path.join(templatePath, "index-ts.txt"))),
+    new SFile("tsconfig.json", readFile(path.join(templatePath, "tsconfig.txt"))),
     new Folder("img"),
 ]);
-var _dist = new Folder("dist");
 var _lib = new Folder("lib");
-var _test = new Folder("test", testFiles);
+var _test = new Folder("test", [
+    new SFile("main.test.js", readFile(path.join(templatePath, "./test/main.test.txt")))
+]);
 ROOT_FOLDER.append([
     _src,
-    _dist,
     _lib,
     _test,
-    new SFile("tsconfig.json", readFile(path.join(templatePath, "tsconfig.txt"))),
+    new SFile("README.md", readFile(path.join(templatePath, "readme.txt"))),
+    new SFile("package.json", JSON.stringify(packageJSONContent))
 ]);
 ROOT_FOLDER.create();
 /**
@@ -51,12 +67,17 @@ ROOT_FOLDER.create();
  */
 var DOCUMENT_DIR = path.join(process.cwd(), argv._[0]);
 var spawn = require('child_process').spawn;
+var figlet = require('figlet');
 process.chdir(DOCUMENT_DIR);
-var child = spawn('npm', ['init'], { detached: true, stdio: 'inherit' });
-child.on('exit', function () {
-    var innerChild = spawn("npm", ["install", "@snowblind/core", "@snowblind/hooks", "--save-dev"], { detached: true, stdio: "inherit" });
-    innerChild.on("exit", function () {
-        console.log("🎉🎉 We're done creating the project, let's explore it! 🎉🎉");
-        process.exit();
+console.log("Installing @snowblind/core, @snowblind/hooks and @snowblind/testing");
+var innerChild = spawn("npm", ["install", "@snowblind/core", "@snowblind/hooks", "typescript", "webpack", "webpack-cli", "--save-dev"], { detached: true, stdio: "inherit" });
+innerChild.on("exit", function () {
+    var data = figlet.textSync("Welcome To\n  Snowblind", {
+        font: "Big",
+        horizontalLayout: "fitted",
+        verticalLayout: "fitted"
     });
+    console.log(data);
+    console.log("🎉🎉 We're done creating the project, let's explore it! 🎉🎉");
+    process.exit();
 });

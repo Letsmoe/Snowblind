@@ -1,0 +1,23 @@
+import { expect, it, describe, beforeEach, afterEach } from "@snowblind/testing";
+
+/**
+ * Tests allow you to test functionality for errors.
+ * While it may seem like everything is working just fine there might be hidden errors.
+ * Unit-Tests help eliminate a great portion of the errors you might have not thought were there...
+ */
+
+describe("You can use this function like a heading to a test run.", () => {
+	/**
+	 * Every test run consists of a set of tests, specific functionality and finally the actual result checks.
+	 * You can run the `beforeEach` and `afterEach` functions in every section, it will only apply on the one it is in.
+	 */
+	it("Should call the `add` function and check the result to be an integer", () => {
+		/**
+		 * Every result you want to check can be executed here by
+		 * just calling the `expect` function on the result. 
+		 * 
+		 * This also works with Async Functions...!
+		 */
+		expect(add(2, 5)).toEqual(7);
+	})
+})

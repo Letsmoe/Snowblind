@@ -1,7 +1,7 @@
 import RenderAssignment from "./render-assignment.js";
 import { Observer } from "./observer.js";
-import { SnowblindElement } from "./types";
-export { useRef, useState, useEffect, } from "./hooks/index";
+import { ISnowblindElement } from "./types";
+export { useRef, useState, useEffect, } from "./hooks/index.js";
 import { SnowblindChild } from "./shared-internals.js";
 declare global {
     interface Window {
@@ -15,7 +15,7 @@ declare const Snowblind: {
             children?: SnowblindChild[];
         }, generator: Function, options?: {
             hasTheme: boolean;
-            replace: SnowblindElement;
+            replace: ISnowblindElement;
         }): {
             hasTheme: any;
             _maxCopies: number;

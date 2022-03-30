@@ -25,7 +25,7 @@ export interface SnowblindComponent {
     onComponentWillUnmount(callback: Function): void;
     render(...args: any[]): any;
 }
-export interface SnowblindElement extends HTMLElement {
+export interface ISnowblindElement extends HTMLElement {
     isReferenceTo?: ISnowblindRef;
 }
 //# sourceMappingURL=types.d.ts.map

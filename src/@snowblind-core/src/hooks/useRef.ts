@@ -1,4 +1,4 @@
-import { SnowblindRef } from "../shared-internals";
+import { SnowblindRef } from "../shared-internals.js";
 import {ISnowblindRef} from "../types"
 
 /**

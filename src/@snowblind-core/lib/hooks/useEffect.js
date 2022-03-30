@@ -1,5 +1,5 @@
 import { UpdateDispatcher } from "../shared-internals.js";
-import deepCompare from "../utils/deepCompare";
+import deepCompare from "../utils/deepCompare.js";
 function useEffect(callback, stateConditional = []) {
     var originalValues = stateConditional.map(x => x.valueOf());
     UpdateDispatcher.subscribe((value) => {

@@ -1,6 +1,6 @@
 {
 	"name": "@snowblind/core",
-	"version": "1.1.13",
+	"version": "1.1.14",
 	"description": "Snowblind Rendering Engine - Taking component based design to the next level.",
 	"main": "./dist/snowblind.min.js",
 	"types": "./dist/index.d.ts",

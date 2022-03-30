@@ -1,5 +1,5 @@
-export { Snowblind, expose } from "./snowblind";
-export { useState, useRef, useEffect } from "./hooks/index";
+export { Snowblind, expose } from "./snowblind.js";
+export { useState, useRef, useEffect } from "./hooks/index.js";
 export { html } from "./html";
 export {
 	SnowblindRef,
@@ -7,4 +7,4 @@ export {
 	ValueBinder,
 	SnowblindChild,
 	UpdateDispatcher,
-} from "./shared-internals";
+} from "./shared-internals.js";

@@ -1,4 +1,4 @@
-import RenderAssignment from "./render-assignment";
+import RenderAssignment from "./render-assignment.js";
 
 const isProxy = Symbol("");
 
