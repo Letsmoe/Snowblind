@@ -15,7 +15,6 @@
 	import {Snowblind, expose} from "../lib/snowblind.js";
 	import {html} from "../lib/html.js"
 	import {useState} from "../lib/hooks/useState.js"
-
 	
 	function Inner(props) {
 		props["pass-function"]();
@@ -23,6 +22,10 @@
 		return () => html`<div>
 			${
 				props["prop-array"].map(x => html`<p>${x}</p>`)
+			}
+			Nice
+			${
+				props.children
 			}
 		</div>`
 	}
@@ -38,13 +41,18 @@
 		const fn2 = () => {
 			console.log("Was passed!");
 		}
+		
 		return () => html`<div @click=${() => setValue(value + 1)} style="width: 200px; height: 200px;">
 			<p>Hello${value * 1}</p>
 			<p>Hello${value * 2}</p>
 			<p>Hello${value * 3}</p>
 			<p>Hello${value * 4}</p>
 			<p>Hello${value * 5}</p>
-			<Inner prop-array=${array} @click=${fn} pass-function=${fn2}></Inner>
+			<Inner prop-array=${array} @click=${fn} pass-function=${fn2}>
+				<Inner prop-array=${array} @click=${fn} pass-function=${fn2}>
+					<Inner prop-array=${array} @click=${fn} pass-function=${fn2}></Inner>
+				</Inner>
+			</Inner>
 			<p>Hello${value * 1}</p>
 		</div>`
 	}

@@ -1,8 +1,8 @@
 {
 	"name": "@snowblind/hooks",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"description": "A library full of hooks usable in a Snowblind aware context",
-	"main": "index.js",
+	"main": "./lib/index.js",
 	"directories": {
 		"lib": "lib",
 		"test": "test"

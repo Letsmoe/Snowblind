@@ -18,15 +18,8 @@ declare class ValueBinder {
     valueOf(): any;
     toString(): any;
 }
-declare class SnowblindChild {
-    ID: string;
-    element: any;
-    constructor(el: HTMLElement);
-    setElement(el: HTMLElement): void;
-}
 declare const NodeInsertAfter: (newNode: any, current: any) => void;
-declare const childrenObjects: {};
 declare const exposedComponents: {};
 declare const UpdateDispatcher: Observable;
-export { UpdateDispatcher, ValueBinder, Observable, exposedComponents, SnowblindChild, childrenObjects, SnowblindRef, NodeInsertAfter };
+export { UpdateDispatcher, ValueBinder, Observable, exposedComponents, SnowblindRef, NodeInsertAfter };
 //# sourceMappingURL=shared-internals.d.ts.map

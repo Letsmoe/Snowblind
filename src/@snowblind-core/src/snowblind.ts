@@ -11,7 +11,6 @@ export {
 import {
 	UpdateDispatcher,
 	exposedComponents,
-	SnowblindChild,
 	Observable
 } from "./shared-internals.js";
 
@@ -62,7 +61,7 @@ const Snowblind = {
 		Renderer: RenderAssignment;
 		_generatorFunction: any;
 		constructor(
-			props: { children?: SnowblindChild[] },
+			props: { children?: any[] },
 			generator: Function,
 			options: { hasTheme: boolean; replace: ISnowblindElement } = {
 				hasTheme: false,
@@ -104,9 +103,7 @@ const Snowblind = {
 			 * Initialize empty dependencies object for useEffect calls
 			 */
 			if (options.replace instanceof HTMLElement) {
-				props.children = Array.from(options.replace.childNodes).map(
-					(x) => new SnowblindChild(x as HTMLElement)
-				);
+				props.children = Array.from(options.replace.childNodes)
 			}
 			this._Observer = new Observer(props || {});
 			this.props = this._Observer._value;

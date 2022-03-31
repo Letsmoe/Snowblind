@@ -1,0 +1,29 @@
+{
+	"name": "@snowblind/components",
+	"version": "0.0.3",
+	"description": "A full-on component library for Snowblind",
+	"main": "./lib/index.js",
+	"directories": {
+		"lib": "lib",
+		"test": "test"
+	},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "tsc --project ./src/tsconfig.json && webpack --config=webpack.config.js",
+		"publish-minor": "npm run build && npm version minor --no-git-tag-version && npm publish",
+		"publish-patch": "npm run build && npm version patch --no-git-tag-version && npm publish",
+		"publish-major": "npm run build && npm version major --no-git-tag-version && npm publish"
+	},
+	"keywords": [
+		"hooks",
+		"snowblind"
+	],
+	"author": "letsmoe",
+	"license": "MIT",
+	"dependencies": {
+		"@mdx-js/loader": "^2.1.1",
+		"@mdx-js/mdx": "^2.1.1",
+		"@snowblind/core": "^1.2.0",
+		"@snowblind/hooks": "^0.0.3"
+	}
+}

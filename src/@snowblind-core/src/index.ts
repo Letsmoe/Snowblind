@@ -5,6 +5,5 @@ export {
 	SnowblindRef,
 	Observable,
 	ValueBinder,
-	SnowblindChild,
 	UpdateDispatcher,
 } from "./shared-internals.js";

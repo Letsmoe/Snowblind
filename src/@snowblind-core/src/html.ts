@@ -1,7 +1,6 @@
 import { Snowblind } from "./snowblind.js";
 import {
 	ValueBinder,
-	SnowblindChild,
 	NodeInsertAfter,
 	exposedComponents,
 } from "./shared-internals.js";
@@ -18,41 +17,47 @@ const getAttributes = (node: HTMLElement) => {
 
 const MATCH_INDEX = /\{\{([0-9]+)\}\}/g;
 
-const isStringArray = (arr : any[]) => arr.map(x => typeof x === "string").indexOf(false) === -1;
-const findIndex = (str : string) => str.matchAll(MATCH_INDEX);
+const isStringArray = (arr: any[]) =>
+	arr.map((x) => typeof x === "string").indexOf(false) === -1;
+const findIndex = (str: string) => str.matchAll(MATCH_INDEX);
 
 class SnowblindElement {
 	public attributes: { [key: string]: any };
-	public node : ISnowblindElement;
-	public values : any[];
-	constructor(node: ISnowblindElement, values : any[]) {
+	public node: ISnowblindElement;
+	public values: any[];
+	public createdNewComponent: boolean;
+	constructor(node: ISnowblindElement, values: any[], walker?: TreeWalker) {
 		this.attributes = getAttributes(node);
 		this.node = node;
 		this.values = values;
 		let nodeName = this.node.nodeName.toLowerCase();
+
 		// Check if node is a component-to-be and stop any attribute assignment on it, just fill the attributes object.
 		const stopOverwrite = exposedComponents.hasOwnProperty(nodeName);
 
 		for (const key in this.attributes) {
 			let indexString = this.attributes[key];
 			let indices = Array.from(findIndex(indexString));
-			let arrValues = indices.map(index => {
+			let arrValues = indices.map((index) => {
 				// Index number is stored in first capture group (index[1]) as a string.
 				return values[parseInt(index[1])];
-			})
-			
+			});
+
 			/**
 			 * We can assume that only string based attributes will have more than one value inserted into them.
 			 */
 			let subName = key.substring(1);
-			let value : any;
+			let value: any;
 			let dontRemove = false;
 			if (isStringArray(arrValues)) {
 				// The whole thing is just strings, replace them together...
-				value = indexString.replace(MATCH_INDEX, (full: any, index: any) => {
-					index = parseInt(index);
-					return values[index];
-				})
+				value = indexString.replace(
+					MATCH_INDEX,
+					(full: any, index: any) => {
+						index = parseInt(index);
+						return values[index];
+					}
+				);
 			} else {
 				// We cannot assign multiple values to the same property... We just take the last one and that's it!
 				value = arrValues[arrValues.length - 1];
@@ -69,7 +74,7 @@ class SnowblindElement {
 					this.node.isReferenceTo = value;
 					this.node.removeAttribute("ref");
 				}
-	
+
 				if (key.startsWith("@")) {
 					// Assign a new event to the node. (Check if second char is @ sign, if so it should only apply to the node not it's children.)
 					if (key[1] === "@") {
@@ -79,7 +84,7 @@ class SnowblindElement {
 					}
 				} else if (key.startsWith(".")) {
 					// Assign JS property value to the node.
-					this.setProperties(subName, value)
+					this.setProperties(subName, value);
 				} else if (key.startsWith("?")) {
 					// Conditionally Apply to the node.
 					this.setConditionally(subName, value);
@@ -98,20 +103,30 @@ class SnowblindElement {
 		}
 
 		if (stopOverwrite === true) {
+			scanElement(this.node, this.values);
+
+			if (walker) {
+				walker.previousSibling();
+			}
 			// Create a new component from the found node.
-			let component = new Snowblind.Component(this.attributes, exposedComponents[nodeName], {
-				hasTheme: false,
-				replace: this.node,
-			})
+			let component = new Snowblind.Component(
+				this.attributes,
+				exposedComponents[nodeName],
+				{
+					hasTheme: false,
+					replace: this.node,
+				}
+			);
 			this.node = component.Node;
+			this.createdNewComponent = true;
 		}
 	}
 
-	trySetAttribute(key: string, value : any) {
+	trySetAttribute(key: string, value: any) {
 		try {
 			this.node.setAttribute(key, value);
 		} catch (e) {
-			console.error(`'${key}' is not a valid attribute name.`)
+			console.error(`'${key}' is not a valid attribute name.`);
 		}
 	}
 
@@ -128,27 +143,44 @@ class SnowblindElement {
 		}
 	}
 
-	setProperties(property : string, props : any) {
+	setProperties(property: string, props: any) {
 		this.node[property] = props;
 	}
 
 	setEvent(event: string, callback: Function, onlyThisNode: boolean = false) {
 		this.node.addEventListener(event, (e) => {
-			if (onlyThisNode && (e.target as HTMLElement).isEqualNode(this.node)) {
-				callback(this.node, e)
+			if (
+				onlyThisNode &&
+				(e.target as HTMLElement).isEqualNode(this.node)
+			) {
+				callback(this.node, e);
 			} else if (!onlyThisNode) {
-				callback(this.node, e)
+				callback(this.node, e);
 			}
 		});
 	}
 }
 
-function html(strings: TemplateStringsArray, ...vars: any[]) {
-	function insertText(elem : ISnowblindElement, text : string) {
-		var textElement = document.createTextNode(text);
-		elem.appendChild(textElement);
+function scanElement(node: HTMLElement, arrValues: any[]) {
+	var walker = document.createTreeWalker(node, 1, null);
+	let current: ISnowblindElement;
+	while ((current = walker.nextNode() as ISnowblindElement)) {
+		current = new SnowblindElement(current, arrValues, walker).node;
 	}
+}
 
+function isInstance(el : any, type : any | any[], mode : string = "or") {
+	type = [type].flat(1);
+	let map = type.map((x: any) => el instanceof x);
+	return (mode == "or" ? map.indexOf(true) > -1 : map.indexOf(false) == -1);
+}
+
+function insertText(elem: ISnowblindElement, text: string) {
+	var textElement = document.createTextNode(text);
+	elem.appendChild(textElement);
+	return textElement;
+}
+function html(strings: TemplateStringsArray, ...vars: any[]) {
 	var result = "",
 		i = 0;
 	for (const str of strings) {
@@ -157,7 +189,10 @@ function html(strings: TemplateStringsArray, ...vars: any[]) {
 	}
 	const template = document.createElement("template");
 	// Try correcting non-terminated HTML tags
-	result = result.replace(/<([A-z0-9]+)(.*?)\/>(?: |$|<[A-z]|\n)/g, "<$1 $2></$1>")
+	result = result.replace(
+		/<([A-z0-9]+)(.*?)\/>(?: |$|<[A-z]|\n)/g,
+		"<$1 $2></$1>"
+	);
 
 	template.innerHTML = result;
 
@@ -176,41 +211,33 @@ function html(strings: TemplateStringsArray, ...vars: any[]) {
 	let foundInputs = 0;
 
 	while ((node = walker.nextNode() as HTMLElement) !== null) {
-		console.log(node);
-		
-		const element = new SnowblindElement(node, vars)
-		node = element.node
-		
+		const element = new SnowblindElement(node, vars, walker);
+		node = element.node;
+
 		/**
 		 * Check if node is an input or a textarea, if so, set a key for focusing it later on.
 		 */
 		if (
-			node instanceof HTMLTextAreaElement ||
-			node instanceof HTMLInputElement
+			isInstance(node, [HTMLTextAreaElement, HTMLInputElement])
 		) {
 			if (!node.hasAttribute("key")) {
 				node.setAttribute("key", "input-" + foundInputs);
 				foundInputs++;
 			}
 		}
-		
 
 		/**
 		 * Check text nodes, append HTML if necessary
 		 */
+		var lastItem : HTMLElement | Text;
 		var childNodes = Array.from(node.childNodes);
 		for (const children of childNodes) {
 			if (children.nodeType === Node.TEXT_NODE) {
 				var innerText = children.textContent;
-				const matchArray = Array.from(
-					innerText.matchAll(MATCH_INDEX)
-				);
-				innerText = innerText.replace(
-					MATCH_INDEX,
-					(i: string) => {
-						return " ".repeat(i.length);
-					}
-				);
+				const matchArray = Array.from(innerText.matchAll(MATCH_INDEX));
+				innerText = innerText.replace(MATCH_INDEX, (i: string) => {
+					return " ".repeat(i.length);
+				});
 				if (matchArray.length > 0) {
 					// We're gonna insert everything from scratch, just remove all content before inserting something twice...
 					children.textContent = "";
@@ -229,42 +256,38 @@ function html(strings: TemplateStringsArray, ...vars: any[]) {
 						match.index
 					);
 					if (insertBefore !== "") {
-						insertText(node, insertBefore);
+						lastItem = insertText(node, insertBefore);
 					}
 					/**
-					 * Object is no primitive, handle differently
+					 * Handle different insertion options.
 					 */
-					const appendNonPrimitive = (value: any) => {
-						if (value instanceof SnowblindChild) {
-							appendNonPrimitive(value.element);
-						} else if (
-							value instanceof HTMLElement ||
-							value instanceof SVGElement ||
-							value instanceof Text
+					const appendItem = (value: any) => {
+						if (
+							isInstance(value, [HTMLElement, SVGElement, Text])
 						) {
-							NodeInsertAfter(value, children);
+							NodeInsertAfter(value, lastItem);
+							lastItem = value;
 						} else if (Array.isArray(value)) {
 							value
 								.slice()
-								.reverse()
-								.map((x) => appendNonPrimitive(x));
+								.map((x) => appendItem(x));
 						} else {
 							if (
 								value !== Object(value) ||
-								value instanceof ValueBinder
+								isInstance(value, ValueBinder)
 							) {
 								/**
 								 * Handle primitive, simple insert
 								 */
-								insertText(node, value);
+								lastItem = insertText(node, value);
 							} else {
 								console.error(
-									"Only instances of HTMLElement, SVGElement, Text, Array or SnowblindChild are supported."
+									"Only instances of HTMLElement, SVGElement, Text or Array are supported."
 								);
 							}
 						}
 					};
-					appendNonPrimitive(value);
+					appendItem(value);
 
 					if (i == matchArray.length - 1) {
 						/**

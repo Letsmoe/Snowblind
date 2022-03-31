@@ -1,5 +1,4 @@
 import { Snowblind } from "./snowblind.js";
-import { childrenObjects } from "./shared-internals.js";
 export default class RenderAssignment {
     constructor(obj, options = {}) {
         obj._Observer.boundRender = this;
@@ -42,10 +41,6 @@ export default class RenderAssignment {
         const activeElement = document.activeElement;
         const selectionStart = activeElement.selectionStart;
         const selectionEnd = activeElement.selectionEnd;
-        let snowblindChildID;
-        if ((snowblindChildID = this._lastNode.getAttribute("data-is-snowblind-child"))) {
-            childrenObjects[snowblindChildID].setElement(this._Node);
-        }
         this._lastNode.replaceWith(this._Node);
         if (activeElement) {
             const key = activeElement.getAttribute("key");

@@ -1,4 +1,4 @@
-import {Snowblind} from "../ts-out/src/snowblind.js"
+import {Snowblind} from "@snowblind/core"
 
 export const SIZES = ["xs", "sm", "md", "lg", "xl"];
 
@@ -58,23 +58,23 @@ export {
 
 /**
  * Convert a hex string to a css-rgb color
- * @param {String} hex A hex string consisting of a hash followed by 6 hex letters.
- * @returns {String} The hex value converted to an rgb value in the css-rgb format.
+ * @param hex A hex string consisting of a hash followed by 6 hex letters.
+ * @returns The hex value converted to an rgb value in the css-rgb format.
  */
-function transformColor(hex, alpha) {
+function transformColor(hex : string, alpha? : number) : string {
 	let span = document.createElement("span");
 	span.style.color = hex;
 	let [r, g, b, a] = getRgbComponents(span.style.color);
 	return `rgba(${r}, ${g}, ${b}, ${alpha || a || 1})`;
 }
 
-function modifyColor(color, modifier = (x) => x) {
+function modifyColor(color : string, modifier = (x : number) => x) {
 	color = transformColor(color)
 	let [r, g, b, a] = getRgbComponents(color);
 	return `rgba(${modifier(r)}, ${modifier(g)}, ${modifier(b)}, ${a || 1})`;
 }
 
-function getRgbComponents(str) {
+function getRgbComponents(str : string) {
 	// Match all `rgb(1,2,3)` and `rgba(1,2,3,0.1)` strings and write them to their individual components.
 	let match = str.match(/rgba?\([ ]*?([\d]+)[ ]*?,[ ]*?([\d]+)[ ]*?,[ ]*?([\d]+)[ ]*?(?:(?=,),[ ]*?([.\d]+)[ ]*?\)|\))/);
 	let r = parseInt(match[1])

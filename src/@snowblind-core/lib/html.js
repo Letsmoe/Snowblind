@@ -1,5 +1,5 @@
 import { Snowblind } from "./snowblind.js";
-import { ValueBinder, SnowblindChild, NodeInsertAfter, exposedComponents, } from "./shared-internals.js";
+import { ValueBinder, NodeInsertAfter, exposedComponents, } from "./shared-internals.js";
 const getAttributes = (node) => {
     return Array.from(node.attributes)
         .map((a) => [a.name, a.value])
@@ -9,10 +9,10 @@ const getAttributes = (node) => {
     }, {});
 };
 const MATCH_INDEX = /\{\{([0-9]+)\}\}/g;
-const isStringArray = (arr) => arr.map(x => typeof x === "string").indexOf(false) === -1;
+const isStringArray = (arr) => arr.map((x) => typeof x === "string").indexOf(false) === -1;
 const findIndex = (str) => str.matchAll(MATCH_INDEX);
 class SnowblindElement {
-    constructor(node, values) {
+    constructor(node, values, walker) {
         this.attributes = getAttributes(node);
         this.node = node;
         this.values = values;
@@ -21,7 +21,7 @@ class SnowblindElement {
         for (const key in this.attributes) {
             let indexString = this.attributes[key];
             let indices = Array.from(findIndex(indexString));
-            let arrValues = indices.map(index => {
+            let arrValues = indices.map((index) => {
                 return values[parseInt(index[1])];
             });
             let subName = key.substring(1);
@@ -70,11 +70,16 @@ class SnowblindElement {
             }
         }
         if (stopOverwrite === true) {
+            scanElement(this.node, this.values);
+            if (walker) {
+                walker.previousSibling();
+            }
             let component = new Snowblind.Component(this.attributes, exposedComponents[nodeName], {
                 hasTheme: false,
                 replace: this.node,
             });
             this.node = component.Node;
+            this.createdNewComponent = true;
         }
     }
     trySetAttribute(key, value) {
@@ -101,7 +106,8 @@ class SnowblindElement {
     }
     setEvent(event, callback, onlyThisNode = false) {
         this.node.addEventListener(event, (e) => {
-            if (onlyThisNode && e.target.isEqualNode(this.node)) {
+            if (onlyThisNode &&
+                e.target.isEqualNode(this.node)) {
                 callback(this.node, e);
             }
             else if (!onlyThisNode) {
@@ -110,11 +116,24 @@ class SnowblindElement {
         });
     }
 }
-function html(strings, ...vars) {
-    function insertText(elem, text) {
-        var textElement = document.createTextNode(text);
-        elem.appendChild(textElement);
+function scanElement(node, arrValues) {
+    var walker = document.createTreeWalker(node, 1, null);
+    let current;
+    while ((current = walker.nextNode())) {
+        current = new SnowblindElement(current, arrValues, walker).node;
     }
+}
+function isInstance(el, type, mode = "or") {
+    type = [type].flat(1);
+    let map = type.map((x) => el instanceof x);
+    return (mode == "or" ? map.indexOf(true) > -1 : map.indexOf(false) == -1);
+}
+function insertText(elem, text) {
+    var textElement = document.createTextNode(text);
+    elem.appendChild(textElement);
+    return textElement;
+}
+function html(strings, ...vars) {
     var result = "", i = 0;
     for (const str of strings) {
         result +=
@@ -130,16 +149,15 @@ function html(strings, ...vars) {
     let node;
     let foundInputs = 0;
     while ((node = walker.nextNode()) !== null) {
-        console.log(node);
-        const element = new SnowblindElement(node, vars);
+        const element = new SnowblindElement(node, vars, walker);
         node = element.node;
-        if (node instanceof HTMLTextAreaElement ||
-            node instanceof HTMLInputElement) {
+        if (isInstance(node, [HTMLTextAreaElement, HTMLInputElement])) {
             if (!node.hasAttribute("key")) {
                 node.setAttribute("key", "input-" + foundInputs);
                 foundInputs++;
             }
         }
+        var lastItem;
         var childNodes = Array.from(node.childNodes);
         for (const children of childNodes) {
             if (children.nodeType === Node.TEXT_NODE) {
@@ -158,34 +176,29 @@ function html(strings, ...vars) {
                     var value = vars[index];
                     var insertBefore = innerText.substring(lastOffsetIndex, match.index);
                     if (insertBefore !== "") {
-                        insertText(node, insertBefore);
+                        lastItem = insertText(node, insertBefore);
                     }
-                    const appendNonPrimitive = (value) => {
-                        if (value instanceof SnowblindChild) {
-                            appendNonPrimitive(value.element);
-                        }
-                        else if (value instanceof HTMLElement ||
-                            value instanceof SVGElement ||
-                            value instanceof Text) {
-                            NodeInsertAfter(value, children);
+                    const appendItem = (value) => {
+                        if (isInstance(value, [HTMLElement, SVGElement, Text])) {
+                            NodeInsertAfter(value, lastItem);
+                            lastItem = value;
                         }
                         else if (Array.isArray(value)) {
                             value
                                 .slice()
-                                .reverse()
-                                .map((x) => appendNonPrimitive(x));
+                                .map((x) => appendItem(x));
                         }
                         else {
                             if (value !== Object(value) ||
-                                value instanceof ValueBinder) {
-                                insertText(node, value);
+                                isInstance(value, ValueBinder)) {
+                                lastItem = insertText(node, value);
                             }
                             else {
-                                console.error("Only instances of HTMLElement, SVGElement, Text, Array or SnowblindChild are supported.");
+                                console.error("Only instances of HTMLElement, SVGElement, Text or Array are supported.");
                             }
                         }
                     };
-                    appendNonPrimitive(value);
+                    appendItem(value);
                     if (i == matchArray.length - 1) {
                         children.remove();
                         var insertAfter = innerText.substring(match.index + match[0].length);

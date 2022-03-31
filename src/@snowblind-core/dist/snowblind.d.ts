@@ -2,7 +2,6 @@ import RenderAssignment from "./render-assignment.js";
 import { Observer } from "./observer.js";
 import { ISnowblindElement } from "./types";
 export { useRef, useState, useEffect, } from "./hooks/index.js";
-import { SnowblindChild } from "./shared-internals.js";
 declare global {
     interface Window {
         typeCheck: (props: {}, propTypes: {}, defaultProps: {}) => never | {};
@@ -12,7 +11,7 @@ declare function expose(components: any, optNames?: string[]): void;
 declare const Snowblind: {
     Component: {
         new (props: {
-            children?: SnowblindChild[];
+            children?: any[];
         }, generator: Function, options?: {
             hasTheme: boolean;
             replace: ISnowblindElement;

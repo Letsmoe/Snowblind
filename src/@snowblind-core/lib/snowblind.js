@@ -1,7 +1,7 @@
 import RenderAssignment from "./render-assignment.js";
 import { Observer } from "./observer.js";
 export { useRef, useState, useEffect, } from "./hooks/index.js";
-import { UpdateDispatcher, exposedComponents, SnowblindChild, Observable } from "./shared-internals.js";
+import { UpdateDispatcher, exposedComponents, Observable } from "./shared-internals.js";
 function expose(components, optNames = []) {
     optNames = Array.from([optNames]).flat();
     var i = 0;
@@ -32,7 +32,7 @@ const Snowblind = {
             this.didUpdateCallbacks = [];
             this.willUnmountCallbacks = [];
             if (options.replace instanceof HTMLElement) {
-                props.children = Array.from(options.replace.childNodes).map((x) => new SnowblindChild(x));
+                props.children = Array.from(options.replace.childNodes);
             }
             this._Observer = new Observer(props || {});
             this.props = this._Observer._value;

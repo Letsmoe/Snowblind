@@ -57,23 +57,6 @@ class ValueBinder {
 	}
 };
 
-class SnowblindChild {
-	ID: string;
-	element: any;
-	constructor(el : HTMLElement) {
-		this.ID = (Math.random() + 1).toString(36).substring(2);
-		childrenObjects[this.ID] = this;
-		this.setElement(el)
-	}
-
-	setElement(el : HTMLElement) {
-		this.element = el;
-		if (this.element.setAttribute) {
-			this.element.setAttribute("data-is-snowblind-child", this.ID);
-		}
-	}
-}
-
 /**
  * Inserts a given element after another.
  * @param newNode The node to be inserted after
@@ -85,10 +68,9 @@ const NodeInsertAfter = function (newNode : any, current : any) : void {
 	}
 };
 
-const childrenObjects = {};
 const exposedComponents = {};
 const UpdateDispatcher = new Observable();
 
 export {
-	UpdateDispatcher, ValueBinder, Observable, exposedComponents, SnowblindChild, childrenObjects, SnowblindRef, NodeInsertAfter
+	UpdateDispatcher, ValueBinder, Observable, exposedComponents, SnowblindRef, NodeInsertAfter
 }

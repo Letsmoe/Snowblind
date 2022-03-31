@@ -3,6 +3,8 @@
 		"lib": ["DOM", "es2020"],
 		"outDir": "../lib/",
 		"noImplicitAny": false, 
+		"declaration": true,
+		"declarationMap": true,
 		"module": "es6",
 		"target": "ES2015",
 		"allowJs": true,

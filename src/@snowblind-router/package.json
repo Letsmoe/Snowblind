@@ -1,0 +1,22 @@
+{
+	"name": "@snowblind/router",
+	"version": "1.2.0",
+	"description": "Client Side Routing implementation for Snowblind",
+	"main": "./dist/router.min.js",
+	"types": "./dist/index.d.ts",
+	"directories": {
+		"test": "test"
+	},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "webpack --config=webpack.config.js",
+		"publish-minor": "npm run build && npm version minor --no-git-tag-version && npm publish",
+		"publish-patch": "npm run build && npm version patch --no-git-tag-version && npm publish",
+		"publish-major": "npm run build && npm version major --no-git-tag-version && npm publish"
+	},
+	"author": "letsmoe",
+	"license": "MIT",
+	"dependencies": {
+		"@snowblind/core": "^1.2.0"
+	}
+}

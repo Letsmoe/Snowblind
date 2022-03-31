@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"lib": ["DOM", "es2020"],
+		"outDir": "../lib/",
+		"noImplicitAny": false, 
+		"module": "es6",
+		"target": "ES2015",
+		"declaration": true,
+		"declarationMap": true,
+		"allowJs": true,
+		"moduleResolution": "node"
+	},
+	"compileOnSave": true
+}
