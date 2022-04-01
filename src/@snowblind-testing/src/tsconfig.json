@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"declaration": true,
+		"declarationDir": "../dist/",
+		"declarationMap": true,
+		"moduleResolution": "node",
+		"target": "es2015",
+		"outDir": "../lib/",
+		"lib": ["es2020", "dom"],
+		"esModuleInterop": true,
+		"module": "es2020"
+	},
+	"compileOnSave": true
+}

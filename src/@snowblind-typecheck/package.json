@@ -1,0 +1,23 @@
+{
+  "name": "snowblind_typecheck",
+  "version": "1.0.1",
+  "description": "A typechecking extension for the Snowblind renderer.",
+  "main": "/src/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node test/index.js",
+    "build": "webpack --config=webpack.config.prod.js",
+	"build-dev": "webpack --config=webpack.config.dev.js"
+  },
+  "author": "Letsmoe",
+  "license": "MIT",
+  "devDependencies": {
+    "webpack": "^5.70.0",
+    "webpack-cli": "^4.9.2"
+  },
+  "dependencies": {
+    "clean-webpack-plugin": "^4.0.0"
+  }
+}
