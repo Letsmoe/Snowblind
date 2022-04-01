@@ -1,5 +1,5 @@
 import { SnowblindRef } from "../shared-internals.js";
-import {ISnowblindRef} from "../types"
+import {ISnowblindRef} from "../types.js"
 
 /**
  * Focus an element instance after a render cycle, allowing to pass methods directly through to the DOM Node.

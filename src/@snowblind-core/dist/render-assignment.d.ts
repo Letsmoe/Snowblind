@@ -1,4 +1,4 @@
-import { SnowblindComponent } from "./types";
+import { SnowblindComponent } from "./types.js";
 export default class RenderAssignment {
     _wasDestroyed: boolean;
     _renderIsFirstTime: boolean;

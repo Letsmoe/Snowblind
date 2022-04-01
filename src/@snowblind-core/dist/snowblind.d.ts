@@ -1,6 +1,6 @@
 import RenderAssignment from "./render-assignment.js";
 import { Observer } from "./observer.js";
-import { ISnowblindElement } from "./types";
+import { ISnowblindElement } from "./types.js";
 export { useRef, useState, useEffect, } from "./hooks/index.js";
 declare global {
     interface Window {

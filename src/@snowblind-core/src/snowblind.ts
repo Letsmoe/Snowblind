@@ -1,6 +1,6 @@
 import RenderAssignment from "./render-assignment.js";
 import { Observer } from "./observer.js";
-import {SnowblindComponent, ISnowblindElement} from "./types"
+import {SnowblindComponent, ISnowblindElement} from "./types.js"
 
 export {
 	useRef,

@@ -28,4 +28,5 @@ export interface SnowblindComponent {
 export interface ISnowblindElement extends HTMLElement {
     isReferenceTo?: ISnowblindRef;
 }
+export declare const MATCH_INDEX: RegExp;
 //# sourceMappingURL=types.d.ts.map

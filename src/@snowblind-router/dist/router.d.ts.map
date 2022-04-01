@@ -1,1 +1,1 @@
-{"version":3,"file":"router.d.ts","sourceRoot":"","sources":["../src/router.ts"],"names":[],"mappings":"AAEA,iBAAS,YAAY,CAAC,KAAK,EAAG;IAAC,QAAQ,EAAE,WAAW,EAAE,CAAA;CAAC,iBAKtD;AAED,OAAO,EAAC,YAAY,EAAC,CAAA"}
+{"version":3,"file":"router.d.ts","sourceRoot":"","sources":["../src/router.ts"],"names":[],"mappings":"AA2DA,iBAAS,YAAY,CAAC,KAAK,EAAE;IAAE,QAAQ,EAAE,WAAW,EAAE,CAAA;CAAE,iBAKvD;AAED,OAAO,EAAE,YAAY,EAAE,CAAA"}

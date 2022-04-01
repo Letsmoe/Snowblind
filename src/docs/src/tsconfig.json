@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "declaration": true,
+        "declarationDir": "../dist/",
+        "declarationMap": true,
+        "target": "ES2015",
+        "moduleResolution": "node",
+        "outDir": "../lib/"
+    },
+    "compileOnSave": true
+}

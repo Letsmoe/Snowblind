@@ -1,5 +1,5 @@
 import {Snowblind} from "./snowblind.js"
-import {SnowblindComponent} from "./types"
+import {SnowblindComponent} from "./types.js"
 
 export default class RenderAssignment {
 	_wasDestroyed: boolean;

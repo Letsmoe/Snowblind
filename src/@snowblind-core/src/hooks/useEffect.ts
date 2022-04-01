@@ -2,7 +2,7 @@ import {
 	UpdateDispatcher
 } from "../shared-internals.js";
 import deepCompare from "../utils/deepCompare.js";
-import {SnowblindComponent} from "../types"
+import {SnowblindComponent} from "../types.js"
 
 function useEffect(callback : Function, stateConditional = []) {
 	/**
