@@ -1,27 +1,22 @@
 {
-	"name": "snowblind_testing",
-	"version": "1.0.0",
+	"name": "@snowblind/testing",
+	"version": "0.0.2",
 	"type": "module",
-	"description": "An extensive testing library and part of Snowblind.",
-	"main": "/dist/testing.min.js",
-	"directories": {
-		"test": "test"
-	},
+	"description": "A full-on testing library for Snowblind",
+	"main": "./dist/testing.min.js",
 	"scripts": {
-		"test": "node test/index.js",
-		"build": "tsc -p ./src/tsconfig.json && webpack --config=webpack.config.prod.js"
+		"test": "echo \"Error: no test specified\" && exit 1"
 	},
-	"author": "Letsmoe",
+	"author": "letsmoe",
 	"license": "MIT",
 	"devDependencies": {
-		"webpack": "^5.70.0",
-		"webpack-cli": "^4.9.2"
+		"@types/node": "^17.0.23"
 	},
 	"dependencies": {
-		"jsdom": "^19.0.0",
+		"chokidar": "^3.5.3",
 		"yargs": "^17.4.0"
 	},
 	"bin": {
-		"flake": "./lib/cli/run-test.js"
+		"run-flake": "./lib/cli/cli.js"
 	}
 }

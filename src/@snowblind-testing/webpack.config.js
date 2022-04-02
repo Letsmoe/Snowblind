@@ -1,9 +1,11 @@
 const path = require('path');
 
-module.exports = {
+module.exports = [{
 	mode: "production",
-	entry: './lib/index.js',
-	experiments: {outputModule: true},
+	entry: "./lib/index.js",
+	experiments: {
+		outputModule: true
+	},
 	output: {
 		filename: "testing.min.js",
 		path: path.resolve(__dirname, 'dist'),
@@ -11,4 +13,4 @@ module.exports = {
 			type: "module"
 		}
 	}
-};
+}];
