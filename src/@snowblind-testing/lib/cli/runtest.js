@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 const PATH = process.argv[2];
+const RUN_BROWSER = process.argv[3];
 /**
  * search for test folder
  */

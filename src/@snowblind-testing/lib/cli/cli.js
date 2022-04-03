@@ -14,11 +14,18 @@ const args = Yargs(process.argv)
     default: "./",
     type: "string",
 })
+    .option("browser", {
+    alias: "b",
+    describe: "Should the test be executed in a browser window - this will start a live server?",
+    default: false,
+    type: "boolean",
+})
     .help().argv;
 const PATH = args.folder;
+const RUN_BROWSER = args.browser;
 function runOnce() {
     console.clear();
-    child_process.spawn("node", ["./lib/cli/runtest.js", PATH], { stdio: "inherit" });
+    child_process.spawn("node", ["./lib/cli/runtest.js", PATH, RUN_BROWSER], { stdio: "inherit" });
 }
 if (args.watch) {
     chokidar
