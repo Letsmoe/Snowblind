@@ -7,4 +7,7 @@ This is an overview page of Snowblind and its related resources.
 
 - [Try Snowblind](https://continuum-ai.de/snowblind/try-snowblind)
 - [Versioned Documentation](https://continuum-ai.de/snowblind/docs/versions)
-- 
+
+----
+
+## Try Snowblind
