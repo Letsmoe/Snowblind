@@ -1,6 +1,14 @@
 import * as chokidar from "chokidar";
 import * as child_process from "child_process";
+import * as fs from "fs";
 import Yargs from "yargs";
+import {OpenServer} from "../server/open-server.js";
+import { eventLoop, informationContainer } from "../events.js";
+import { getFiles } from "../filesystem/files.js";
+import { SocketServer } from "../server/websocket.js";
+import { showTestsResults } from "../result-display.js";
+import { stats } from "../test.js";
+import { shared } from "../shared.js";
 
 const args = Yargs(process.argv)
 	.option("watch", {
@@ -23,21 +31,36 @@ const args = Yargs(process.argv)
 	})
 	.help().argv;
 
-const PATH = args.folder;
-const RUN_BROWSER = args.browser
 
+const PATH = args.folder;
+informationContainer.folderPath = PATH;
 
 function runOnce() {
 	console.clear();
-	child_process.spawn("node", ["./lib/cli/runtest.js", PATH, RUN_BROWSER], { stdio: "inherit" });
+	child_process.spawn("node", ["./lib/cli/runtest.js", PATH, args.browser], { stdio: "inherit" });
 }
 
 if (args.watch) {
 	chokidar
 		.watch("**/*.js", { interval: 500, persistent: true })
 		.on("change", (path, evt) => {
-			runOnce();
+			let paths = getFiles(PATH);
+			eventLoop.trigger("filesDidChange", {files: paths});
+			if (args.browser === false) {
+				runOnce();
+			}
 		});
 }
-
-runOnce();
+if (args.browser === false) {
+	runOnce();
+} else {
+	OpenServer()
+	const wsServer = new SocketServer();
+	shared.server = wsServer;
+	wsServer.on("didReceiveMessage", (message: { [x: string]: any; }) => {
+		for (const key in message) {
+			stats[key] = message[key];
+		}
+		showTestsResults();
+	})
+}

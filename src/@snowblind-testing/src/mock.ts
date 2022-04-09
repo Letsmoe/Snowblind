@@ -1,4 +1,4 @@
-function mockFn(mockFunction) {
+function mockFn(mockFunction : any) {
 	const originalMockedFunction = mockFunction || (() => {
 		const once = _returnValueOnce.shift();
 		return once !== undefined ? once : _returnValue;

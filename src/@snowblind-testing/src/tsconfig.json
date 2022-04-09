@@ -6,7 +6,8 @@
 		"declarationDir": "../dist/",
 		"declarationMap": true,
 		"outDir": "../lib/",
-		"module": "es2020"
+		"module": "es2020",
+		"allowSyntheticDefaultImports": true,
 	},
 	"compileOnSave": true
 }

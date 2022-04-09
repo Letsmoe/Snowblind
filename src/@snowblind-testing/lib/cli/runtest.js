@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-const PATH = process.argv[2];
+const PATH = path.join(process.cwd(), process.argv[2]);
 const RUN_BROWSER = process.argv[3];
 /**
  * search for test folder
@@ -28,7 +28,6 @@ function runTestFiles(f = []) {
     const readyArray = Array(f.length).fill(false);
     for (let i = 0; i < f.length; i++) {
         const g = f[i];
-        console.log(path.join(PATH, g));
         import(fs.realpathSync(path.join(PATH, g))).then(() => {
             readyArray[i] = true;
         });

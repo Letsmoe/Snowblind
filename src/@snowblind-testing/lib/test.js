@@ -1,6 +1,7 @@
 import { sideEffects, currIt, currDesc } from "./side-effects.js";
 import { Task } from "./task.js";
 import { showTestsResults } from "./result-display.js";
+import { updateStats } from "./shared.js";
 var stats = { describes: [], failed: 0, passed: 0, total: 0 };
 function expect(result, register = true) {
     var isAsync = false;
@@ -31,14 +32,18 @@ function expect(result, register = true) {
             message: `expected '${r}' to be falsy`,
             pass: r ? false : true,
         }),
-        toBeInTheDocument: (r) => ({
+        toBeInDocument: (r) => ({
             message: `expected node to be in the document`,
             pass: document.contains(r),
         }),
         to: (r, fn) => {
             // Test if a custom function returns true.
             return { message: `expected function to return '${r}'`, pass: fn(r) };
-        }
+        },
+        toBeIn: (r, parent) => ({
+            message: `expected node to be in ${parent}`,
+            pass: parent.contains(r),
+        })
     }, {
         set: () => false,
         get: (x, y) => {
@@ -63,9 +68,11 @@ function expect(result, register = true) {
                 }, isAsync, declineResult, register);
                 task.onDidFinish(() => {
                     showTestsResults();
+                    updateStats();
                 });
                 task.run();
                 resultFunctions.push(task);
+                updateStats();
                 showTestsResults();
                 return lookupObject;
             };

@@ -1,5 +1,5 @@
 // test/sub.spec.js
-import {describe, it, expect, afterEach, beforeEach, afterAll, beforeAll} from "../lib/index.js";
+import {describe, it, expect, afterEach, beforeEach, afterAll, beforeAll} from "../dist/testing.min.js";
 import {add} from "./importmodule.js";
 
 describe("every matching condition", () => {
@@ -47,5 +47,13 @@ describe("Asynchronous thread handling", () => {
 				resolve({hello: "nice"})
 			}, 500)
 		})).resolves.toEqual({hello: "nice"});
+	})
+})
+
+describe("In document?", () => {
+	it("should be in the document", () => {
+		let element = document.createElement("span");
+		document.body.appendChild(element)
+		expect(element).toBeIn(document.body)
 	})
 })
