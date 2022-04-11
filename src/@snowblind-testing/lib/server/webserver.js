@@ -2,6 +2,9 @@ import * as http from "http";
 import * as fs from "fs";
 import * as path from "path";
 import * as mime from "mime-types";
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+const __dirname = dirname(fileURLToPath(import.meta.url));
 class WebServer {
     constructor(port = 7072, baseFolder = process.cwd()) {
         this.port = port;
@@ -29,7 +32,13 @@ class WebServer {
         let type, file;
         if (requestURL.startsWith("/index") || requestURL === "/") {
             [type, file] = this.getFile(path.join(this.baseFolder, "test/index.test.html"));
-            file += `<script type="text/javascript"></script>`;
+            let [x, jsContent] = this.getFile(path.join(__dirname, "./content.js"));
+            file += `<script type="text/javascript">${jsContent}</script>`;
+        }
+        else if (requestURL.startsWith("/overview")) {
+            [type, file] = this.getFile(path.join(__dirname, "../overview.html"));
+            let [x, jsContent] = this.getFile(path.join(__dirname, "../overview/index.js"));
+            file += `<script type="text/javascript">${jsContent}</script>`;
         }
         else {
             [type, file] = this.getFile(path.join(this.baseFolder, requestURL));

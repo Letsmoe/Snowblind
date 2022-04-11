@@ -8,4 +8,4 @@ declare class WebServer {
     provider(req: any, res: any): void;
 }
 export { WebServer };
-//# sourceMappingURL=open-server.d.ts.map
+//# sourceMappingURL=webserver.d.ts.map

@@ -46,8 +46,8 @@ function updateStats() {
 	sendStash.replaceWith(JSON.stringify(stats))
 }
 
-const shared : {server: SocketServer, stats: any[]} = {
-	server: undefined, stats: []
+const shared : {server: SocketServer, stats: any[], root: string, paths: string[]} = {
+	server: undefined, stats: [], root: undefined, paths: []
 }
 
 export {updateStats, shared}

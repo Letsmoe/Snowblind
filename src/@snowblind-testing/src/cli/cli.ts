@@ -2,7 +2,7 @@ import * as chokidar from "chokidar";
 import * as child_process from "child_process";
 import * as fs from "fs";
 import Yargs from "yargs";
-import {OpenServer} from "../server/open-server.js";
+import {WebServer} from "../server/webserver.js";
 import { eventLoop, informationContainer } from "../events.js";
 import { getFiles } from "../filesystem/files.js";
 import { SocketServer } from "../server/websocket.js";
@@ -31,30 +31,29 @@ const args = Yargs(process.argv)
 	})
 	.help().argv;
 
-
-const PATH = args.folder;
-informationContainer.folderPath = PATH;
-
-function runOnce() {
+shared.root = args.folder; // Register root folder for use in other application
+shared.paths = getFiles(shared.root);
+function run() {
 	console.clear();
-	child_process.spawn("node", ["./lib/cli/runtest.js", PATH, args.browser], { stdio: "inherit" });
+	child_process.spawn("node", ["./lib/cli/runtest.js", shared.root, args.browser], { stdio: "inherit" });
 }
 
 if (args.watch) {
 	chokidar
 		.watch("**/*.js", { interval: 500, persistent: true })
-		.on("change", (path, evt) => {
-			let paths = getFiles(PATH);
+		.on("change", () => {
+			let paths = getFiles(shared.root);
+			shared.paths = paths;
 			eventLoop.trigger("filesDidChange", {files: paths});
 			if (args.browser === false) {
-				runOnce();
+				run();
 			}
 		});
 }
 if (args.browser === false) {
-	runOnce();
+	run();
 } else {
-	OpenServer()
+	new WebServer()
 	const wsServer = new SocketServer();
 	shared.server = wsServer;
 	wsServer.on("didReceiveMessage", (message: { [x: string]: any; }) => {

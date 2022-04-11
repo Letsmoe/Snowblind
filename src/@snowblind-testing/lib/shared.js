@@ -38,6 +38,6 @@ function updateStats() {
     sendStash.replaceWith(JSON.stringify(stats));
 }
 const shared = {
-    server: undefined, stats: []
+    server: undefined, stats: [], root: undefined, paths: []
 };
 export { updateStats, shared };
