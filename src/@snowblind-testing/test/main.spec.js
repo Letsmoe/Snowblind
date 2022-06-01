@@ -40,12 +40,12 @@ describe("Asynchronous thread handling", () => {
 		expect(new Promise((resolve, reject) => {
 			setTimeout(() => {
 				resolve(1)
-			}, 500)
+			}, 5000)
 		})).resolves.toBe(1);
 		expect(new Promise((resolve, reject) => {
 			setTimeout(() => {
 				resolve({hello: "nice"})
-			}, 500)
+			}, 5000)
 		})).resolves.toEqual({hello: "nice"});
 	})
 })

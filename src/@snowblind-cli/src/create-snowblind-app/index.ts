@@ -1,8 +1,8 @@
 #! /usr/bin/env node
-const yargs = require("yargs");
-const path = require("path");
+import * as path from "path";
+import yargs from "yargs";
 
-const argv = yargs
+const argv = yargs(process.argv.slice(2))
 	.command(
 		"create-snowblind-app <name> [typescript] [webpack]",
 		"Generates the project structure of a default Snowblind project."

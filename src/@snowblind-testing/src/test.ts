@@ -61,7 +61,7 @@ function expect(result : any, register : boolean = true) {
 				} else if (y === "and") {
 					return lookupObject;
 				} else if (y === "result") {
-					return resultFunctions.at(-1).result.pass
+					return resultFunctions[resultFunctions.length - 1].result.pass
 				}
 
 				return (...args : any[]) => {
