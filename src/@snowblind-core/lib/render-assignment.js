@@ -14,7 +14,11 @@ export default class RenderAssignment {
         }
     }
     Render() {
+        var _a;
         if (this._wasDestroyed) {
+            /**
+             * Destroy method has been called, cancel the render
+             */
             throw new Error("Renderer has been destroyed.");
         }
         if (this.Object._usesTransition) {
@@ -29,13 +33,22 @@ export default class RenderAssignment {
                 });
             }
         }
+        /**
+         * Give access to parent element
+         */
         var obj = this.Object.render();
         if (obj instanceof HTMLElement) {
+            /**
+             * Keep eventListeners and append directly as HTMLElement
+             */
             this._Node = obj;
         }
         else {
             throw new Error("Can only initialize object with type of HTMLElement.");
         }
+        /**
+         * Reset nodes on base object
+         */
         this.Object.Node = this._Node;
         var Node = this._Node;
         const activeElement = document.activeElement;
@@ -43,15 +56,23 @@ export default class RenderAssignment {
         const selectionEnd = activeElement.selectionEnd;
         this._lastNode.replaceWith(this._Node);
         if (activeElement) {
+            // Check if there was a focused element and if it had a `key` attribute that might be used to re-focus it.
             const key = activeElement.getAttribute("key");
             if (key) {
-                const focusNode = Node.querySelector(`[key='${key}']`);
+                // Key found, let's focus the element.
+                const focusNode = ((_a = Node.attributes["key"]) === null || _a === void 0 ? void 0 : _a.value) === key ? Node : Node.querySelector(`[key='${key}']`);
                 focusNode.focus();
                 focusNode.setSelectionRange(selectionStart, selectionEnd);
             }
         }
         this._lastNode = Node;
+        /**
+         * Provide node to the component
+         */
         if (this.Object._usesTransition) {
+            /**
+             * Apply any transition effects to the node
+             */
             this._copiesKeptAlive++;
             this.Object.transitionFunction.from(() => {
                 if (!this._renderIsFirstTime) {
@@ -60,6 +81,9 @@ export default class RenderAssignment {
             });
         }
         if (this.Object.hasTheme) {
+            /**
+             * Apply custom styling
+             */
             const compareStyles = document.createElement("div");
             const appendStyles = (elements, query) => {
                 const properties = this.Object.hasTheme[query];
@@ -85,18 +109,30 @@ export default class RenderAssignment {
             }
         }
         if (this._renderIsFirstTime === true) {
+            /**
+             * Component is only mounted AFTER the render finishes
+             */
             execArray(this.Object.didMountCallbacks, this._Node);
             this._renderIsFirstTime = false;
         }
         else {
+            /**
+             * Run componentDidUpdate() method AFTER component rerender
+             */
             execArray(this.Object.didUpdateCallbacks, this._Node);
         }
     }
     reinitialize() {
+        /**
+         * Build the render again (reset render status and call constructor)
+         */
         this._renderIsFirstTime = true;
         this.constructor(this.Object);
     }
     Destroy() {
+        /**
+         * Unmount component then remove node and linking element
+         */
         this._wasDestroyed = true;
         execArray(this.Object.willUnmountCallbacks);
         if (this.Object._usesTransition) {

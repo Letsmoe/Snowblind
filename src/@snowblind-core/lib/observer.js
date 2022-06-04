@@ -1,5 +1,9 @@
 const isProxy = Symbol("");
 class Observer {
+    /**
+     * Instantiates a proxy based on a passed object supporting rerendering of components.
+     * @param value The object a proxy should be attached to.
+     */
     constructor(value, callback = () => { }) {
         const _Handler = {
             get(target, key) {
@@ -9,6 +13,7 @@ class Observer {
                 if (typeof prop == 'undefined') {
                     return;
                 }
+                // set value as proxy if object
                 if (prop !== null) {
                     var constructor = prop.constructor;
                     if (!prop[isProxy] && constructor && ((constructor === ({}).constructor) || (constructor === ([]).constructor))) {

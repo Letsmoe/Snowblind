@@ -1,1 +1,1 @@
-{"version":3,"file":"useState.d.ts","sourceRoot":"","sources":["../../src/hooks/useState.ts"],"names":[],"mappings":"AAAA,OAAO,EAGN,WAAW,EACX,MAAM,wBAAwB,CAAC;AAShC,iBAAS,QAAQ,CAAC,KAAK,EAAG,GAAG,EAAE,IAAI,GAAE,OAAc,GAAI,CAAC,WAAW,EAAE,QAAQ,CAAC,CAsB7E;AAED,OAAO,EAAC,QAAQ,EAAC,CAAC"}
+{"version":3,"file":"useState.d.ts","sourceRoot":"","sources":["../../src/hooks/useState.ts"],"names":[],"mappings":"AAIA;;;;GAIG;AACH,iBAAS,QAAQ,CAAC,KAAK,EAAG,GAAG,GAAI,CAAC,GAAG,EAAE,QAAQ,CAAC,CAQ/C;AAED,OAAO,EAAC,QAAQ,EAAC,CAAC"}

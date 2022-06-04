@@ -1,11 +1,13 @@
 declare class Observable {
-    _value: any;
-    _subscribers: any[];
+    value: any;
+    private subscribers;
     constructor(value?: any);
     next(value: any): void;
     subscribe(callback: (element?: any) => void): void;
     complete(): void;
     restore(): void;
+    valueOf(): any;
+    toString(): any;
 }
 declare class SnowblindRef {
     current: HTMLElement;
@@ -18,6 +20,11 @@ declare class ValueBinder {
     valueOf(): any;
     toString(): any;
 }
+/**
+ * Inserts a given element after another.
+ * @param newNode The node to be inserted after
+ * @param current The element given node should be inserted after.
+ */
 declare const NodeInsertAfter: (newNode: any, current: any) => void;
 declare const exposedComponents: {};
 declare const UpdateDispatcher: Observable;

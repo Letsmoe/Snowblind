@@ -19,8 +19,12 @@ function html(strings, ...vars) {
             str + (strings[strings.length - 1] === str ? "" : `{{${i++}}}`);
     }
     const template = document.createElement("template");
+    // Try correcting non-terminated HTML tags
     result = result.replace(/<([A-z0-9]+)(.*?)\/>(?: |$|<[A-z]|\n)/g, "<$1 $2></$1>");
     template.innerHTML = result;
+    /**
+     * Limit to one element per fragment, require multiple to be wrapped in another element.
+     */
     if (template.content.children.length > 1) {
         throw new Error("Multiple elements must be wrapped in a single element.");
     }
@@ -30,12 +34,18 @@ function html(strings, ...vars) {
     while ((node = walker.nextNode()) !== null) {
         const element = new SnowblindElement(node, vars, walker);
         node = element.node;
+        /**
+         * Check if node is an input or a textarea, if so, set a key for focusing it later on.
+         */
         if (isInstance(node, [HTMLTextAreaElement, HTMLInputElement])) {
             if (!node.hasAttribute("key")) {
                 node.setAttribute("key", "input-" + foundInputs);
                 foundInputs++;
             }
         }
+        /**
+         * Check text nodes, append HTML if necessary
+         */
         var lastItem;
         var childNodes = Array.from(node.childNodes);
         for (const children of childNodes) {
@@ -46,6 +56,7 @@ function html(strings, ...vars) {
                     return " ".repeat(i.length);
                 });
                 if (matchArray.length > 0) {
+                    // We're gonna insert everything from scratch, just remove all content before inserting something twice...
                     children.textContent = "";
                 }
                 var lastOffsetIndex = 0;
@@ -53,10 +64,16 @@ function html(strings, ...vars) {
                     const match = matchArray[i];
                     var index = parseInt(match[1]);
                     var value = vars[index];
+                    /**
+                     * Insert text before the element if existed beforehand.
+                     */
                     var insertBefore = innerText.substring(lastOffsetIndex, match.index);
                     if (insertBefore !== "") {
                         lastItem = insertText(node, insertBefore);
                     }
+                    /**
+                     * Handle different insertion options.
+                     */
                     const appendItem = (value) => {
                         if (isInstance(value, [HTMLElement, SVGElement, Text])) {
                             NodeInsertAfter(value, lastItem);
@@ -70,6 +87,9 @@ function html(strings, ...vars) {
                         else {
                             if (value !== Object(value) ||
                                 isInstance(value, ValueBinder)) {
+                                /**
+                                 * Handle primitive, simple insert
+                                 */
                                 lastItem = insertText(node, value);
                             }
                             else {
@@ -79,6 +99,9 @@ function html(strings, ...vars) {
                     };
                     appendItem(value);
                     if (i == matchArray.length - 1) {
+                        /**
+                         * Last element, append rest of string.
+                         */
                         children.remove();
                         var insertAfter = innerText.substring(match.index + match[0].length);
                         if (insertAfter != "") {
@@ -90,6 +113,9 @@ function html(strings, ...vars) {
             }
         }
     }
+    /**
+     * Loop through all children again and render components
+     */
     const child = template.content.children[0];
     Snowblind.renderAllIn(child);
     return child;

@@ -1,25 +1,31 @@
 class Observable {
     constructor(value) {
-        this._value = value;
-        this._subscribers = [];
+        this.value = value;
+        this.subscribers = [];
     }
     next(value) {
-        this._value = value;
-        for (const subscriber of this._subscribers) {
+        this.value = value;
+        for (const subscriber of this.subscribers) {
             subscriber(value);
         }
     }
     subscribe(callback) {
-        this._subscribers.push(callback);
+        this.subscribers.push(callback);
     }
     complete() {
-        this._subscribers = new Proxy([], { set: () => {
-                throw new Error("Observable has been completed.");
+        this.subscribers = new Proxy([], { set: () => {
+                throw new Error("Observable has been closed.");
             } });
     }
     restore() {
-        this._subscribers = [];
-        this._value = undefined;
+        this.subscribers = [];
+        this.value = undefined;
+    }
+    valueOf() {
+        return this.value;
+    }
+    toString() {
+        return this.value.toString();
     }
 }
 class SnowblindRef {
@@ -30,7 +36,7 @@ class SnowblindRef {
 class ValueBinder {
     constructor(obs) {
         this.observable = obs;
-        this.value = obs._value;
+        this.value = obs.value;
         obs.subscribe((val) => {
             this.value = val;
         });
@@ -43,6 +49,11 @@ class ValueBinder {
     }
 }
 ;
+/**
+ * Inserts a given element after another.
+ * @param newNode The node to be inserted after
+ * @param current The element given node should be inserted after.
+ */
 const NodeInsertAfter = function (newNode, current) {
     if (current && current.parentNode) {
         current.parentNode.insertBefore(newNode, current.nextSibling);

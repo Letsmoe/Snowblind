@@ -28,5 +28,19 @@ export interface SnowblindComponent {
 export interface ISnowblindElement extends HTMLElement {
     isReferenceTo?: ISnowblindRef;
 }
+export interface iSnowblind {
+    Component: any;
+    Fragment: () => DocumentFragment;
+    renderAllIn: (element: HTMLElement) => void;
+    render: (container: HTMLElement, component: any) => void;
+    make: (initializer: Function | string, props: {
+        [key: string]: any;
+    }) => any;
+    eventBus: {
+        on: (eventName: string, callback: Function) => void;
+        dispatch: (eventName: string, data: any) => void;
+        remove: (eventName: string, callback: EventListenerOrEventListenerObject) => void;
+    };
+}
 export declare const MATCH_INDEX: RegExp;
 //# sourceMappingURL=types.d.ts.map

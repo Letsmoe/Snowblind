@@ -9,9 +9,9 @@
 		"declarationMap": true,
 		"declarationDir": "../dist",
 		"moduleResolution": "Node",
-		"removeComments": true,
-		"noImplicitAny": false,
-		"noEmitOnError": true
+		"jsxFactory": "Snowblind.make",
+		"jsxFragmentFactory": "Snowblind.Fragment",
+		"jsx": "react",
 	},
 	"compileOnSave": true,
 	"exclude": ["node_modules"]

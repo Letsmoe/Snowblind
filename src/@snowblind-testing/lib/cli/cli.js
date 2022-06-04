@@ -1,6 +1,7 @@
+#!/usr/bin/env node
 import * as chokidar from "chokidar";
 import * as child_process from "child_process";
-import Yargs from "yargs";
+import { colarg } from "colarg";
 import { WebServer } from "../server/webserver.js";
 import { eventLoop } from "../events.js";
 import { getFiles } from "../filesystem/files.js";
@@ -8,31 +9,38 @@ import { SocketServer } from "../server/websocket.js";
 import { showTestsResults } from "../result-display.js";
 import { stats } from "../test.js";
 import { shared } from "../shared.js";
-const args = Yargs(process.argv)
-    .option("watch", {
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const args = colarg(process.argv.slice(2))
+    .option({
+    name: "watch",
     alias: "w",
-    describe: "Should the folder be watched for changes?",
-    default: false,
+    description: "Should the folder be watched for changes?",
+    defaults: false,
     type: "boolean",
 })
-    .option("folder", {
+    .option({
+    name: "folder",
     alias: "f",
-    describe: "The file or folder to be used as an entry.",
-    default: "./",
+    description: "The file or folder to be used as an entry.",
+    defaults: "./",
     type: "string",
 })
-    .option("browser", {
+    .option({
+    name: "browser",
     alias: "b",
-    describe: "Should the test be executed in a browser window - this will start a live server?",
-    default: false,
+    description: "Should the test be executed in a browser window - this will start a live server?",
+    defaults: false,
     type: "boolean",
 })
-    .help().argv;
+    .help().args;
 shared.root = args.folder; // Register root folder for use in other application
 shared.paths = getFiles(shared.root);
 function run() {
     console.clear();
-    child_process.spawn("node", ["./lib/cli/runtest.js", shared.root, args.browser], { stdio: "inherit" });
+    const scriptPath = `${__dirname}/runtest.js`;
+    child_process.spawn("node", [scriptPath, shared.root, args.browser], { stdio: "inherit" });
 }
 if (args.watch) {
     chokidar

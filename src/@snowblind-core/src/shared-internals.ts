@@ -1,31 +1,39 @@
 class Observable {
-	_value: any;
-	_subscribers: any[];
+	public value: any;
+	private subscribers: any[];
 	constructor(value? : any) {
-		this._value = value;
-		this._subscribers = [];
+		this.value = value;
+		this.subscribers = [];
 	}
 
 	next(value : any) {
-		this._value = value;
-		for (const subscriber of this._subscribers) {
+		this.value = value;
+		for (const subscriber of this.subscribers) {
 			subscriber(value)
 		}
 	}
 
 	subscribe(callback : (element? : any) => void) {
-		this._subscribers.push(callback);
+		this.subscribers.push(callback);
 	}
 
 	complete() {
-		this._subscribers = new Proxy([], {set: () => {
-			throw new Error("Observable has been completed.")
+		this.subscribers = new Proxy([], {set: () => {
+			throw new Error("Observable has been closed.")
 		}});
 	}
 
 	restore() {
-		this._subscribers = [];
-		this._value = undefined;
+		this.subscribers = [];
+		this.value = undefined;
+	}
+
+	valueOf() {
+		return this.value;
+	}
+
+	toString() {
+		return this.value.toString();
 	}
 }
 
@@ -41,7 +49,7 @@ class ValueBinder {
 	value: any;
 	constructor(obs : Observable) {
 		this.observable = obs;
-		this.value = obs._value;
+		this.value = obs.value;
 
 		obs.subscribe((val) => {
 			this.value = val

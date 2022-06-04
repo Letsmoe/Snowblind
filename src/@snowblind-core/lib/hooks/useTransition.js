@@ -1,11 +1,15 @@
 import { UpdateDispatcher } from "../shared-internals.js";
 function useTransition(obj, options) {
     UpdateDispatcher.subscribe((component) => {
+        /**
+         * Animates the render cycle given CSS properties
+         */
         options = Object.assign({
             delay: 0,
             duration: 400,
             maxCopies: Infinity,
             timingFunction: (t, b, c, d) => {
+                // Default easeInOutSine function
                 return -c / 2 * (Math.cos(Math.PI * t / d) - 1) + b;
             }
         }, options);
@@ -20,6 +24,9 @@ function useTransition(obj, options) {
                     const interval = (lastExpectedCycle) => {
                         const elapsed = performance.now() - startTime;
                         if (elapsed >= options.duration) {
+                            /**
+                             * Run one last time to clear lastly updated properties
+                             */
                             if (!lastExpectedCycle) {
                                 requestAnimationFrame(() => {
                                     interval(true);

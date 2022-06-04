@@ -68,7 +68,7 @@ export default class RenderAssignment {
 			const key = activeElement.getAttribute("key");
 			if (key) {
 				// Key found, let's focus the element.
-				const focusNode : (HTMLInputElement | HTMLTextAreaElement) = Node.querySelector(`[key='${key}']`)
+				const focusNode : (HTMLInputElement | HTMLTextAreaElement) = Node.attributes["key"]?.value === key ? (Node as HTMLInputElement) : Node.querySelector(`[key='${key}']`)
 				focusNode.focus();
 				focusNode.setSelectionRange(selectionStart, selectionEnd)
 			}
@@ -158,4 +158,4 @@ export default class RenderAssignment {
 	}
 }
 
-const execArray = (arr, ...args) => arr.map(x => x(...args));
+const execArray = (arr: Function[], ...args: any[]) => arr.map(x => x(...args));

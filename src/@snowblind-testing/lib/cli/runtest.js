@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { describe, it, expect } from '../test.js';
 const PATH = path.join(process.cwd(), process.argv[2]);
 const RUN_BROWSER = process.argv[3];
 /**
@@ -18,7 +19,11 @@ function getTestFiles() {
 function runTestFiles(f = []) {
     for (let i = 0; i < f.length; i++) {
         const g = f[i];
-        import(fs.realpathSync(path.join(PATH, g)));
+        import(fs.realpathSync(path.join(PATH, g))).then(data => {
+            if (data.default) {
+                data.default(describe, it, expect);
+            }
+        });
     }
 }
 function run() {
