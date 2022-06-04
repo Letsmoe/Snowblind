@@ -150,7 +150,6 @@ function html(strings: TemplateStringsArray, ...vars: any[]) {
 	 * Loop through all children again and render components
 	 */
 	const child = template.content.children[0];
-	Snowblind.renderAllIn(child as HTMLElement);
 	return child;
 }
 

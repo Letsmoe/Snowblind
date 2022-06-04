@@ -1,13 +1,10 @@
-import RenderAssignment from "./render-assignment.js";
-import { Observer } from "./observer.js";
-import { SnowblindComponent, ISnowblindElement, iSnowblind } from "./types.js";
-
-export { useRef, useState, useEffect } from "./hooks/index.js";
+import { iSnowblind } from "./types.js";
+export { useRef, useState, onRender } from "./hooks/index.js";
 
 import {
 	UpdateDispatcher,
-	exposedComponents,
 	Observable,
+	SnowblindRef,
 } from "./shared-internals.js";
 
 declare global {
@@ -16,36 +13,19 @@ declare global {
 	}
 }
 
-/**
- * Exposes a component to be grabbed by the initial render process.
- * @param components List of components to add
- * @param optNames Optional list of names if they shall not be auto-retrieved from the components class name.
- */
-function expose(components: any, optNames: string[] = []) {
-	optNames = Array.from([optNames]).flat();
-
-	var i = 0;
-	for (const key in components) {
-		const component = components[key];
-		var name = (
-			typeof optNames[i] === "undefined" ? key : optNames[i]
-		).toLowerCase();
-		exposedComponents[name] = component;
-	}
-}
-
 class Component {
+	_didUpdateOnce: boolean;
 	didMountCallbacks: any[];
 	didUpdateCallbacks: any[];
 	willUnmountCallbacks: any[];
 	props: any;
-	Renderer: RenderAssignment;
 	node: HTMLElement;
 	generator: Function;
 	constructor(
 		props: { children?: any[] },
 		generator: Function
 	) {
+		this._didUpdateOnce = false;
 		this.props = props
 		this.generator = generator;
 		this.didMountCallbacks = [];
@@ -60,7 +40,8 @@ class Component {
 	transitionFunction?: { leave: Function; from: Function; render: Function };
 
 	render() {
-		return this.generator(this.props);
+		this.node = this.generator(this.props);
+		return this.node;
 	}
 
 	onComponentDidMount(callback: Function) {
@@ -73,46 +54,25 @@ class Component {
 	onComponentWillUnmount(callback: Function) {
 		this.willUnmountCallbacks.push(callback);
 	}
+
+	didUpdate() {
+		if (this._didUpdateOnce) {
+			this.didUpdateCallbacks.forEach((callback) => callback(this.node));
+		} else {
+			this.didMountCallbacks.forEach((callback) => callback(this.node));
+			this._didUpdateOnce = true;
+		}
+	}
 }
 
 function SnowblindFragment() {
 	return document.createDocumentFragment();
 }
 
-/**
- * Searches the DOMTree recursively for components, this will ensure parent nodes will be rendered and their children will be included in the render afterwards
- */
-function renderAllIn(element: HTMLElement) {
-	const recurse = (parentList) => {
-		// Filter out scripts
-		for (const parent of parentList) {
-			if (parent instanceof HTMLScriptElement) {
-				continue;
-			}
-			let nodeName = parent.nodeName.toLowerCase();
-			if (exposedComponents.hasOwnProperty(nodeName)) {
-				// Element nodeName in the names of exposed components, it must be one!
-				let component = exposedComponents[nodeName];
-				let isFunction = typeof component === "function";
-				if (isFunction) {
-					const props = this.getNodeProperties(parent);
-					new Snowblind.Component(props, component, {
-						hasTheme: false,
-						replace: parent,
-					});
-				}
-			} else {
-				// No component here! Let's go deeper!
-				recurse(Array.from(parent.children));
-			}
-		}
-	};
-
-	recurse(Array.from(element.children));
-}
-
 function render(parent: HTMLElement, element: Component) {
+	UpdateDispatcher.next(element);
 	parent.appendChild(element.render());
+	element.didUpdate()
 }
 
 const eventBus = {
@@ -162,6 +122,8 @@ function make(
 					node.setAttribute(key, newValue);
 				})
 				node.setAttribute(key, value.value);
+			} else if (key === "ref" || value instanceof SnowblindRef) {
+				value.current = node;
 			} else {
 				node.setAttribute(key, value.toString());
 			}
@@ -169,7 +131,8 @@ function make(
 	}
 	for (const child of children.flat(Infinity)) {
 		if (child instanceof Component) {
-			node.appendChild(child.render())
+			render(node, child);
+			child.didUpdate();
 		} else if (child instanceof HTMLElement) {
 			node.appendChild(child);
 		} else if (child instanceof Observable) {
@@ -192,11 +155,7 @@ const Snowblind: iSnowblind = {
 	Fragment: SnowblindFragment,
 	make: make,
 	render: render,
-	renderAllIn: renderAllIn,
 	eventBus: eventBus,
 };
 
-window.addEventListener("load", () => {
-	renderAllIn(document.body);
-});
-export { Snowblind, expose };
+export { Snowblind };

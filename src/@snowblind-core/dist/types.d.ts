@@ -31,7 +31,6 @@ export interface ISnowblindElement extends HTMLElement {
 export interface iSnowblind {
     Component: any;
     Fragment: () => DocumentFragment;
-    renderAllIn: (element: HTMLElement) => void;
     render: (container: HTMLElement, component: any) => void;
     make: (initializer: Function | string, props: {
         [key: string]: any;

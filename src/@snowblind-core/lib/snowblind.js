@@ -1,21 +1,8 @@
-export { useRef, useState, useEffect } from "./hooks/index.js";
-import { UpdateDispatcher, exposedComponents, Observable, } from "./shared-internals.js";
-/**
- * Exposes a component to be grabbed by the initial render process.
- * @param components List of components to add
- * @param optNames Optional list of names if they shall not be auto-retrieved from the components class name.
- */
-function expose(components, optNames = []) {
-    optNames = Array.from([optNames]).flat();
-    var i = 0;
-    for (const key in components) {
-        const component = components[key];
-        var name = (typeof optNames[i] === "undefined" ? key : optNames[i]).toLowerCase();
-        exposedComponents[name] = component;
-    }
-}
+export { useRef, useState, onRender } from "./hooks/index.js";
+import { UpdateDispatcher, Observable, SnowblindRef, } from "./shared-internals.js";
 class Component {
     constructor(props, generator) {
+        this._didUpdateOnce = false;
         this.props = props;
         this.generator = generator;
         this.didMountCallbacks = [];
@@ -28,7 +15,8 @@ class Component {
         UpdateDispatcher.restore();
     }
     render() {
-        return this.generator(this.props);
+        this.node = this.generator(this.props);
+        return this.node;
     }
     onComponentDidMount(callback) {
         this.didMountCallbacks.push(callback);
@@ -39,43 +27,23 @@ class Component {
     onComponentWillUnmount(callback) {
         this.willUnmountCallbacks.push(callback);
     }
+    didUpdate() {
+        if (this._didUpdateOnce) {
+            this.didUpdateCallbacks.forEach((callback) => callback(this.node));
+        }
+        else {
+            this.didMountCallbacks.forEach((callback) => callback(this.node));
+            this._didUpdateOnce = true;
+        }
+    }
 }
 function SnowblindFragment() {
     return document.createDocumentFragment();
 }
-/**
- * Searches the DOMTree recursively for components, this will ensure parent nodes will be rendered and their children will be included in the render afterwards
- */
-function renderAllIn(element) {
-    const recurse = (parentList) => {
-        // Filter out scripts
-        for (const parent of parentList) {
-            if (parent instanceof HTMLScriptElement) {
-                continue;
-            }
-            let nodeName = parent.nodeName.toLowerCase();
-            if (exposedComponents.hasOwnProperty(nodeName)) {
-                // Element nodeName in the names of exposed components, it must be one!
-                let component = exposedComponents[nodeName];
-                let isFunction = typeof component === "function";
-                if (isFunction) {
-                    const props = this.getNodeProperties(parent);
-                    new Snowblind.Component(props, component, {
-                        hasTheme: false,
-                        replace: parent,
-                    });
-                }
-            }
-            else {
-                // No component here! Let's go deeper!
-                recurse(Array.from(parent.children));
-            }
-        }
-    };
-    recurse(Array.from(element.children));
-}
 function render(parent, element) {
+    UpdateDispatcher.next(element);
     parent.appendChild(element.render());
+    element.didUpdate();
 }
 const eventBus = {
     on(event, callback) {
@@ -118,6 +86,9 @@ function make(initializer, props, ...children) {
                 });
                 node.setAttribute(key, value.value);
             }
+            else if (key === "ref" || value instanceof SnowblindRef) {
+                value.current = node;
+            }
             else {
                 node.setAttribute(key, value.toString());
             }
@@ -125,7 +96,8 @@ function make(initializer, props, ...children) {
     }
     for (const child of children.flat(Infinity)) {
         if (child instanceof Component) {
-            node.appendChild(child.render());
+            render(node, child);
+            child.didUpdate();
         }
         else if (child instanceof HTMLElement) {
             node.appendChild(child);
@@ -150,11 +122,7 @@ const Snowblind = {
     Fragment: SnowblindFragment,
     make: make,
     render: render,
-    renderAllIn: renderAllIn,
     eventBus: eventBus,
 };
-window.addEventListener("load", () => {
-    renderAllIn(document.body);
-});
-export { Snowblind, expose };
+export { Snowblind };
 //# sourceMappingURL=snowblind.js.map

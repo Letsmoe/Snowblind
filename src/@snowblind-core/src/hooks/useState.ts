@@ -10,11 +10,11 @@ import {
 function useState(state : any) : [any, Function] {
 	const obs = new Observable(state);
 
-	const _callback = (newState : any) => {
+	const callback = (newState : any) => {
 		obs.next(newState)
 		return newState
 	}
-	return [obs, _callback]
+	return [obs, callback]
 }
 
 export {useState};

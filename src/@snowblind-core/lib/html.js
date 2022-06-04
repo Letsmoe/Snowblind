@@ -1,4 +1,3 @@
-import { Snowblind } from "./snowblind.js";
 import { ValueBinder, NodeInsertAfter, } from "./shared-internals.js";
 import { SnowblindElement } from "./element.js";
 import { MATCH_INDEX } from "./types.js";
@@ -117,7 +116,6 @@ function html(strings, ...vars) {
      * Loop through all children again and render components
      */
     const child = template.content.children[0];
-    Snowblind.renderAllIn(child);
     return child;
 }
 export { html };

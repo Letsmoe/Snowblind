@@ -1,6 +1,6 @@
 import { UpdateDispatcher } from "../shared-internals.js";
 import deepCompare from "../utils/deepCompare.js";
-function useEffect(callback, stateConditional = []) {
+function onRender(callback, stateConditional = []) {
     /**
      * Store original values to compare against later on, if one updated render the component again.
      */
@@ -14,7 +14,7 @@ function useEffect(callback, stateConditional = []) {
                 /**
                  * Compare values on rerender.
                  */
-                if (originalValues.filter((x, i) => !deepCompare(x, stateConditional[i].valueOf())).length > 0 || originalValues.length == 0) {
+                if (originalValues.filter((x, i) => !deepCompare(x, stateConditional[i].valueOf())).length > 0) {
                     callback(node);
                     originalValues = stateConditional.map(x => x.valueOf());
                 }
@@ -30,5 +30,5 @@ function useEffect(callback, stateConditional = []) {
         value.onComponentDidUpdate(runCallback);
     });
 }
-export { useEffect };
+export { onRender };
 //# sourceMappingURL=useEffect.js.map

@@ -1,12 +1,21 @@
-import { Snowblind, useState } from "./snowblind.js";
+import { Snowblind, useState, useRef, onRender } from "./snowblind.js";
 
 function App(props: {initial: number}) {
 	const [count, setCount] = useState(props.initial);
+	const inputItem = useRef();
+
+	onRender((node) => {
+		console.log("Did render", node)
+		inputItem.current.focus()
+	}, [count])
+	
+
 	return (
-		<div>
+		<div data-name={count}>
 			<p>You clicked <Counter count={count} /> times</p>
 			<button onClick={() => setCount(count + 1)} data-count={count}>Click me</button>
-			<UpdatingComponent interval={1000} />
+			<UpdatingComponent interval={5000} />
+			<input ref={inputItem} type="text"></input>
 		</div>
 	);
 }
@@ -24,4 +33,4 @@ function Counter(props: {count: number}) {
 	return <span data-count={props.count}>{props.count}</span>
 }
 
-Snowblind.render(document.body, <App initial={5}/>);
+Snowblind.render(document.body, <App initial={0}/>);

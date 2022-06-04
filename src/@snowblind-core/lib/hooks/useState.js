@@ -6,11 +6,11 @@ import { Observable } from "../shared-internals.js";
  */
 function useState(state) {
     const obs = new Observable(state);
-    const _callback = (newState) => {
+    const callback = (newState) => {
         obs.next(newState);
         return newState;
     };
-    return [obs, _callback];
+    return [obs, callback];
 }
 export { useState };
 //# sourceMappingURL=useState.js.map

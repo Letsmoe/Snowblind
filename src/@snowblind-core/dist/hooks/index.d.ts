@@ -1,5 +1,5 @@
 export { useState } from "./useState.js";
-export { useEffect } from "./useEffect.js";
+export { onRender } from "./onRender.js";
 export { useRef } from "./useRef.js";
 export { useTransition } from "./useTransition.js";
 //# sourceMappingURL=index.d.ts.map
