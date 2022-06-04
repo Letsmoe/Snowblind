@@ -59,7 +59,7 @@ function expect(result, register = true) {
                 return lookupObject;
             }
             else if (y === "result") {
-                return resultFunctions.at(-1).result.pass;
+                return resultFunctions[resultFunctions.length - 1].result.pass;
             }
             return (...args) => {
                 let task = new Task(x[y], {
