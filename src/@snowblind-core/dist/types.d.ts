@@ -35,11 +35,6 @@ export interface iSnowblind {
     make: (initializer: Function | string, props: {
         [key: string]: any;
     }) => any;
-    eventBus: {
-        on: (eventName: string, callback: Function) => void;
-        dispatch: (eventName: string, data: any) => void;
-        remove: (eventName: string, callback: EventListenerOrEventListenerObject) => void;
-    };
 }
 export declare const MATCH_INDEX: RegExp;
 //# sourceMappingURL=types.d.ts.map

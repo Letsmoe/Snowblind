@@ -1,0 +1,1 @@
+{"version":3,"file":"applyStyles.d.ts","sourceRoot":"","sources":["../../src/hooks/applyStyles.ts"],"names":[],"mappings":"AAAA,iBAAS,WAAW,CAAC,MAAM,EAAE;IAAE,CAAC,GAAG,EAAE,MAAM,GAAG,MAAM,GAAG,EAAE,CAAA;CAAE,GAAG;IAC7D,CAAC,GAAG,EAAE,MAAM,GAAG,MAAM,CAAC;CACtB,CAiDA;AAED,OAAO,EAAC,WAAW,EAAC,CAAA"}

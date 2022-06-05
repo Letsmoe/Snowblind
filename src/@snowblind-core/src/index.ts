@@ -1,6 +1,6 @@
 export { Snowblind } from "./snowblind.js";
-export { useState, useRef, onRender } from "./hooks/index.js";
+export { applyState, applyRef, applyChange, applyStyles } from "./hooks/index.js";
 export {
-	SnowblindRef,
+	Reference,
 	Observable
 } from "./shared-internals.js";

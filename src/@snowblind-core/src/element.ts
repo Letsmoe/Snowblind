@@ -1,4 +1,3 @@
-import { exposedComponents } from "./shared-internals.js";
 import { Snowblind } from "./snowblind.js";
 import { ISnowblindElement, MATCH_INDEX } from "./types.js";
 

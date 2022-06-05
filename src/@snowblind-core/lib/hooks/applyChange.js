@@ -1,6 +1,6 @@
 import { Observable, UpdateDispatcher } from "../shared-internals.js";
 import deepCompare from "../utils/deepCompare.js";
-function onChange(callback, stateConditional = []) {
+function applyChange(callback, stateConditional = []) {
     // Store original values to compare against later on, if one updated render the component again.
     var originalValues = stateConditional.map((x) => x.valueOf());
     const current = UpdateDispatcher.value;
@@ -34,5 +34,5 @@ function onChange(callback, stateConditional = []) {
         }
     });
 }
-export { onChange };
-//# sourceMappingURL=onRender.js.map
+export { applyChange };
+//# sourceMappingURL=applyChange.js.map

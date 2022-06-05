@@ -1,5 +1,4 @@
 import { iSnowblind } from "./types.js";
-export { useRef, useState, onRender } from "./hooks/index.js";
 declare global {
     interface Window {
         typeCheck: (props: {}, propTypes: {}, defaultProps: {}) => never | {};

@@ -1,10 +1,9 @@
 import { iSnowblind } from "./types.js";
-export { useRef, useState, onRender } from "./hooks/index.js";
 
 import {
 	UpdateDispatcher,
 	Observable,
-	SnowblindRef,
+	Reference,
 } from "./shared-internals.js";
 
 declare global {
@@ -14,23 +13,16 @@ declare global {
 }
 
 class Component {
-	_didUpdateOnce: boolean;
-	didMountCallbacks: any[];
-	didUpdateCallbacks: any[];
-	willUnmountCallbacks: any[];
-	props: any;
+	private didUpdateOnce: boolean = false;
+	private didMountCallbacks: any[] = [];
+	private didUpdateCallbacks: any[] = [];
+	private willUnmountCallbacks: any[] = [];
 	node: HTMLElement;
 	generator: Function;
 	constructor(
-		props: { children?: any[] },
-		generator: Function
+		generator: any
 	) {
-		this._didUpdateOnce = false;
-		this.props = props
 		this.generator = generator;
-		this.didMountCallbacks = [];
-		this.didUpdateCallbacks = [];
-		this.willUnmountCallbacks = [];
 		/**
 		 * Write component to the UpdateDispatcher to be captured by any hooks, close immediately after.
 		 */
@@ -40,7 +32,7 @@ class Component {
 	transitionFunction?: { leave: Function; from: Function; render: Function };
 
 	render() {
-		this.node = this.generator(this.props);
+		this.node = this.generator();
 		return this.node;
 	}
 
@@ -56,11 +48,11 @@ class Component {
 	}
 
 	didUpdate() {
-		if (this._didUpdateOnce) {
+		if (this.didUpdateOnce) {
 			this.didUpdateCallbacks.forEach((callback) => callback(this.node));
 		} else {
 			this.didMountCallbacks.forEach((callback) => callback(this.node));
-			this._didUpdateOnce = true;
+			this.didUpdateOnce = true;
 		}
 	}
 }
@@ -75,24 +67,6 @@ function render(parent: HTMLElement, element: Component) {
 	element.didUpdate()
 }
 
-const eventBus = {
-	on(event: string, callback: Function) {
-		document.addEventListener(event, (e: Event) =>
-			callback(e instanceof CustomEvent ? e.detail : undefined)
-		);
-	},
-	dispatch(event: string, data: any) {
-		document.dispatchEvent(
-			new CustomEvent(event, {
-				detail: data,
-			})
-		);
-	},
-	remove(event: string, callback: EventListenerOrEventListenerObject) {
-		document.removeEventListener(event, callback);
-	},
-};
-
 /**
  * A function that generates an HTML node from given inputs.
  * @param initializer The HTML type of the component or an initializer function to be called generating the HTML content.
@@ -105,48 +79,83 @@ function make(
 	props: Object | null,
 	...children: any[] | null
 ) {
+	props = props || {}
 	let node: HTMLElement;
 	if (typeof initializer === "function") {
-		return new Component(props, initializer);
+		// Initialize the component by calling the initializer function.
+		props["children"] = children;
+		node = initializer(props);
+		return new Component(node);
 	} else {
 		node = document.createElement(initializer);
 	}
 	if (props) {
 		for (const [key, value] of Object.entries(props)) {
 			if (typeof value === "function") {
-				// Try trimming the "on" from the key name
-				const eventName = key.replace(/^on/, "").toLowerCase();
-				node.addEventListener(eventName, value);
+				// Apply an event listener to run the passed callback
+				node[key.toLowerCase()] = value
 			} else if (value instanceof Observable) {
 				value.subscribe((newValue) => {
 					node.setAttribute(key, newValue);
 				})
 				node.setAttribute(key, value.value);
-			} else if (key === "ref" || value instanceof SnowblindRef) {
+			} else if (value instanceof Reference) {
 				value.current = node;
+			} else if (typeof value === "object") {
+				if (key === "style") {
+					for (let [styleKey, styleValue] of Object.entries(value)) {
+						if (styleValue instanceof Observable) {
+							styleValue.subscribe((newValue) => {
+								node.style[styleKey] = newValue;
+							})
+						}
+						if (styleValue === null) {
+							styleValue = "none"
+						} else  if (typeof styleValue === "number") {
+							styleValue = styleValue + "px"
+						}
+						node.style[styleKey] = styleValue;
+					}
+				} else if (key === "props") {
+					for (const [styleKey, styleValue] of Object.entries(value)) {
+						if (styleValue instanceof Observable) {
+							styleValue.subscribe((newValue) => {
+								node[styleKey] = newValue;
+							})
+						}
+						node[styleKey] = styleValue;
+					}
+				} else {
+					node.setAttribute(key, JSON.stringify(value));
+				}
 			} else {
 				node.setAttribute(key, value.toString());
 			}
 		}
 	}
-	for (const child of children.flat(Infinity)) {
-		if (child instanceof Component) {
-			render(node, child);
-			child.didUpdate();
-		} else if (child instanceof HTMLElement) {
-			node.appendChild(child);
-		} else if (child instanceof Observable) {
-			// Store the generated item in a variable so we can access it on each update.
-			let lastItem = document.createTextNode(child.value)
-			child.subscribe((newValue) => {
-				// Change the value of the child node.
-				lastItem.textContent = newValue;
-			})
-			node.appendChild(lastItem);
-		} else {
-			node.appendChild(document.createTextNode(child));
+	const loopChildren = (children: any[]) => {
+		for (const child of children) {
+			if (Array.isArray(child)) {
+				loopChildren(child);
+			} else if (child instanceof Component) {
+				render(node, child);
+				child.didUpdate();
+			} else if (child instanceof HTMLElement) {
+				node.appendChild(child);
+			} else if (child.__proxy instanceof Observable) {
+				// Store the generated item in a variable so we can access it on each update.
+				let lastItem = document.createTextNode(child)
+				child.__proxy.subscribe((newValue: any) => {
+					// Change the value of the child node.
+					lastItem.textContent = newValue;
+				})
+				node.appendChild(lastItem);
+			} else {
+				node.appendChild(document.createTextNode(child));
+			}
 		}
 	}
+	loopChildren(children.flat(Infinity));
 	return node;
 }
 
@@ -154,8 +163,7 @@ const Snowblind: iSnowblind = {
 	Component: Component,
 	Fragment: SnowblindFragment,
 	make: make,
-	render: render,
-	eventBus: eventBus,
+	render: render
 };
 
 export { Snowblind };

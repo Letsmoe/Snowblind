@@ -1,4 +1,3 @@
-import { ValueBinder, NodeInsertAfter, } from "./shared-internals.js";
 import { SnowblindElement } from "./element.js";
 import { MATCH_INDEX } from "./types.js";
 function isInstance(el, type, mode = "or") {
@@ -84,8 +83,7 @@ function html(strings, ...vars) {
                                 .map((x) => appendItem(x));
                         }
                         else {
-                            if (value !== Object(value) ||
-                                isInstance(value, ValueBinder)) {
+                            if (value !== Object(value)) {
                                 /**
                                  * Handle primitive, simple insert
                                  */

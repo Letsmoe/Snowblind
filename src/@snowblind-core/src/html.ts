@@ -1,10 +1,3 @@
-import { Snowblind } from "./snowblind.js";
-import {
-	ValueBinder,
-	NodeInsertAfter,
-	exposedComponents,
-} from "./shared-internals.js";
-
 import {SnowblindElement} from "./element.js";
 import { ISnowblindElement, MATCH_INDEX } from "./types.js";
 
@@ -112,8 +105,7 @@ function html(strings: TemplateStringsArray, ...vars: any[]) {
 								.map((x) => appendItem(x));
 						} else {
 							if (
-								value !== Object(value) ||
-								isInstance(value, ValueBinder)
+								value !== Object(value)
 							) {
 								/**
 								 * Handle primitive, simple insert

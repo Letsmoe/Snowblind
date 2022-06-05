@@ -1,4 +1,4 @@
 export { Snowblind } from "./snowblind.js";
-export { useState, useRef, onRender } from "./hooks/index.js";
-export { SnowblindRef, Observable } from "./shared-internals.js";
+export { applyState, applyRef, applyChange, applyStyles } from "./hooks/index.js";
+export { Reference, Observable } from "./shared-internals.js";
 //# sourceMappingURL=index.d.ts.map

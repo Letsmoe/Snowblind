@@ -35,4 +35,4 @@ function onChange(callback, stateConditional = []) {
     });
 }
 export { onChange };
-//# sourceMappingURL=onRender.js.map
+//# sourceMappingURL=onChange.js.map

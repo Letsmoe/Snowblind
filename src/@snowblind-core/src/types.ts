@@ -38,11 +38,6 @@ export interface iSnowblind {
 	Fragment: () => DocumentFragment;
 	render: (container: HTMLElement, component: any) => void;
 	make: (initializer: Function | string, props: {[key: string]: any}) => any;
-	eventBus: {
-		on: (eventName: string, callback: Function) => void;
-		dispatch: (eventName: string, data: any) => void;
-		remove: (eventName: string, callback: EventListenerOrEventListenerObject) => void;
-	}
 }
 
 export const MATCH_INDEX = /\{\{([0-9]+)\}\}/g;

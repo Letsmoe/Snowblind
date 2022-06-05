@@ -1,5 +1,6 @@
 class Observable {
     constructor(value) {
+        this.subscriberCount = 0;
         this.value = value;
         this.subscribers = [];
     }
@@ -11,6 +12,7 @@ class Observable {
     }
     subscribe(callback) {
         this.subscribers.push(callback);
+        this.subscriberCount++;
     }
     complete() {
         this.subscribers = new Proxy([], { set: () => {
@@ -21,45 +23,12 @@ class Observable {
         this.subscribers = [];
         this.value = undefined;
     }
-    valueOf() {
-        return this.value;
-    }
-    toString() {
-        return this.value.toString();
-    }
 }
-class SnowblindRef {
+class Reference {
     constructor() {
         this.current;
     }
 }
-class ValueBinder {
-    constructor(obs) {
-        this.observable = obs;
-        this.value = obs.value;
-        obs.subscribe((val) => {
-            this.value = val;
-        });
-    }
-    valueOf() {
-        return this.value;
-    }
-    toString() {
-        return this.value.toString();
-    }
-}
-;
-/**
- * Inserts a given element after another.
- * @param newNode The node to be inserted after
- * @param current The element given node should be inserted after.
- */
-const NodeInsertAfter = function (newNode, current) {
-    if (current && current.parentNode) {
-        current.parentNode.insertBefore(newNode, current.nextSibling);
-    }
-};
-const exposedComponents = {};
 const UpdateDispatcher = new Observable();
-export { UpdateDispatcher, ValueBinder, Observable, exposedComponents, SnowblindRef, NodeInsertAfter };
+export { UpdateDispatcher, Observable, Reference };
 //# sourceMappingURL=shared-internals.js.map
