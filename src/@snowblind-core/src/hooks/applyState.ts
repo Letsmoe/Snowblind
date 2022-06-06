@@ -1,4 +1,9 @@
-import { Observable, UpdateDispatcher } from "../shared-internals.js";
+import {
+	Observable,
+	ObserverProxy,
+	UpdateDispatcher,
+} from "../shared-internals.js";
+import { Snowblind } from "../snowblind.js";
 
 /**
  * Defines a state variable to be used for values inside the DOM, re-renders once it's value changes.
@@ -8,36 +13,18 @@ import { Observable, UpdateDispatcher } from "../shared-internals.js";
 function applyState(state: any): [any, Function] {
 	const obs = new Observable(state);
 	let current: any;
-	let target = { value: obs.value };
 
-	UpdateDispatcher.subscribe(node => {
+	UpdateDispatcher.subscribe((node) => {
 		current = node;
-	})
+	});
+
+	const proxy = ObserverProxy(obs);
 
 	const callback = (newState: any) => {
 		obs.next(newState);
-		target.value = newState;
-		console.log(obs);
-		
-		if (typeof newState === "object") {
-			current.node.replaceWith(current.render())
-		}
+		current.node.replaceWith(current.render());
 		return newState;
 	};
-
-	const proxy = new Proxy(
-		target,
-		{
-			get(target, prop) {
-				if (prop === "__proxy") {
-					return obs
-				}
-				const prim = Reflect.get(target, "value");
-				const value = prim[prop];
-				return typeof value === "function" ? value.bind(prim) : value;
-			},
-		}
-	);
 
 	return [proxy, callback];
 }
