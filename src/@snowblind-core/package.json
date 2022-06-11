@@ -1,19 +1,19 @@
 {
 	"name": "@snowblind/core",
-	"version": "2.1.2",
+	"version": "2.1.4",
 	"description": "Snowblind Rendering Engine - Taking component based design to the next level.",
 	"main": "./dist/snowblind.min.js",
-	"types": "./dist/src/snowblind.d.ts",
+	"types": "./dist/snowblind.d.ts",
 	"directories": {
 		"test": "test"
 	},
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "tsc --project ./src/tsconfig.json && webpack --config=webpack.config.js",
-		"build-watch": "webpack --config=webpack.config.js --watch",
-		"publish-minor": "npm run build && npm version minor --no-git-tag-version && npm publish",
-		"publish-patch": "npm run build && npm version patch --no-git-tag-version && npm publish",
-		"publish-major": "npm run build && npm version major --no-git-tag-version && npm publish"
+		"build:watch": "webpack --config=webpack.config.js --watch",
+		"publish:minor": "npm run build && npm version minor --no-git-tag-version && npm publish",
+		"publish:patch": "npm run build && npm version patch --no-git-tag-version && npm publish",
+		"publish:major": "npm run build && npm version major --no-git-tag-version && npm publish"
 	},
 	"author": "letsmoe",
 	"license": "MIT",

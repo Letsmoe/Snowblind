@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = [{
 	mode: "production",
-	entry: "./lib/src/snowblind.js",
+	entry: "./lib/snowblind.js",
 	experiments: {
 		outputModule: true
 	},

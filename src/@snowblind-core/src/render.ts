@@ -6,6 +6,7 @@ function render(parent: HTMLElement, element: Component) {
 	let rendered = element.render();
 	parent.appendChild(rendered);
 	element.didUpdate()
+	return rendered;
 }
 
 export { render }
