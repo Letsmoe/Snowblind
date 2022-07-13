@@ -3,7 +3,6 @@ import {
 	ObserverProxy,
 	UpdateDispatcher,
 } from "../shared-internals.js";
-import { Snowblind } from "../snowblind.js";
 
 /**
  * Defines a state variable to be used for values inside the DOM, re-renders once it's value changes.
@@ -22,7 +21,11 @@ function applyState(state: any): [any, Function] {
 
 	const callback = (newState: any) => {
 		obs.next(newState);
-		current.node.replaceWith(current.render());
+		if (current.node.replaceWith) {
+			current.node.replaceWith(current.render());
+		} else {
+			// We hit a document fragment, dunno how to deal with it tho
+		}
 		return newState;
 	};
 

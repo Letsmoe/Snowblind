@@ -1,6 +1,20 @@
 const path = require('path');
 
 module.exports = [{
+	mode: "development",
+	entry: "./lib/snowblind.js",
+	experiments: {
+		outputModule: true
+	},
+	output: {
+		filename: "snowblind.dev.js",
+		path: path.resolve(__dirname, 'dist'),
+		library: {
+			type: "module"
+		}
+	}
+}, 
+{
 	mode: "production",
 	entry: "./lib/snowblind.js",
 	experiments: {

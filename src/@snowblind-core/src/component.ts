@@ -5,11 +5,14 @@ class Component {
 	private didMountCallbacks: any[] = [];
 	private didUpdateCallbacks: any[] = [];
 	private willUnmountCallbacks: any[] = [];
+	public type: string;
 	node: HTMLElement;
 	generator: Function;
 	constructor(
-		generator: any
+		generator: any,
+		typeName?: string
 	) {
+		this.type = typeName;
 		this.generator = generator;
 		/**
 		 * Write component to the UpdateDispatcher to be captured by any hooks, close immediately after.

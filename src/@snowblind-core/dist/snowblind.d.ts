@@ -1,21 +1,26 @@
 import { Component } from "./component.js";
-import { render } from "./render.js";
-import { SnowblindFragment } from "./fragment.js";
-import { make } from "./make.js";
 declare global {
     interface Window {
         typeCheck: (props: {}, propTypes: {}, defaultProps: {}) => never | {};
     }
 }
-declare const Snowblind: {
+declare type Props = {
+    children: any[];
+    [key: string]: any;
+};
+interface Snowblind {
     options: {
         allowObjectProperties: boolean;
     };
     Component: typeof Component;
-    Fragment: typeof SnowblindFragment;
-    make: typeof make;
-    render: typeof render;
-};
+    Fragment: -32 | string;
+    make: (initializer: string | ((props: {
+        [key: string]: any;
+    }) => HTMLElement) | -32, props: Object | null, ...children: any[] | null) => any;
+    render: (parent: any, children: any) => void;
+    Props?: Props;
+}
+declare const Snowblind: Snowblind;
 export { Snowblind };
 export { applyState, applyRef, applyMemo, applyReducer, applyStyles, applyChange, } from "./hooks/index.js";
 //# sourceMappingURL=snowblind.d.ts.map

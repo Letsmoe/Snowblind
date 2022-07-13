@@ -1,10 +1,11 @@
 import { UpdateDispatcher } from "./shared-internals";
 class Component {
-    constructor(generator) {
+    constructor(generator, typeName) {
         this.didUpdateOnce = false;
         this.didMountCallbacks = [];
         this.didUpdateCallbacks = [];
         this.willUnmountCallbacks = [];
+        this.type = typeName;
         this.generator = generator;
         /**
          * Write component to the UpdateDispatcher to be captured by any hooks, close immediately after.

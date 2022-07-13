@@ -13,7 +13,12 @@ function applyState(state) {
     const proxy = ObserverProxy(obs);
     const callback = (newState) => {
         obs.next(newState);
-        current.node.replaceWith(current.render());
+        if (current.node.replaceWith) {
+            current.node.replaceWith(current.render());
+        }
+        else {
+            // We hit a document fragment, dunno how to deal with it tho
+        }
         return newState;
     };
     return [proxy, callback];

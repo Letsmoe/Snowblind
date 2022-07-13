@@ -3,9 +3,10 @@ declare class Component {
     private didMountCallbacks;
     private didUpdateCallbacks;
     private willUnmountCallbacks;
+    type: string;
     node: HTMLElement;
     generator: Function;
-    constructor(generator: any);
+    constructor(generator: any, typeName?: string);
     transitionFunction?: {
         leave: Function;
         from: Function;

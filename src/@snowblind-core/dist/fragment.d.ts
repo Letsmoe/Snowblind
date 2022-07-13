@@ -1,3 +1,3 @@
-declare function SnowblindFragment(props: any): () => HTMLElement | import("./component").Component;
+declare function SnowblindFragment(props: any): () => import("./component").Component | HTMLElement;
 export { SnowblindFragment };
 //# sourceMappingURL=fragment.d.ts.map

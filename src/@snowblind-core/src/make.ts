@@ -1,7 +1,14 @@
-import { Component } from "./component";
-import { options } from "./options";
-import { render } from "./render";
-import { isProxy, Observable, Reference } from "./shared-internals";
+import { Component } from "./component.js";
+import { options } from "./options.js";
+import { render } from "./render.js";
+import { isProxy, Observable, Reference } from "./shared-internals.js";
+
+type MakeFunctionInitializer = {
+	displayName: string;
+	defaultProps: {[key: string]: any};
+	propTypes: {[key: string]: any};
+	(props: {[key: string]: any}): HTMLElement;
+}
 
 /**
  * A function that generates an HTML node from given inputs.
@@ -11,7 +18,7 @@ import { isProxy, Observable, Reference } from "./shared-internals";
  * @returns The generated node as HTMLElement.
  */
 function make(
-	initializer: string | ((props: { [key: string]: any }) => HTMLElement),
+	initializer: string | MakeFunctionInitializer | -32,
 	props: Object | null,
 	...children: any[] | null
 ) {
@@ -19,60 +26,48 @@ function make(
 	props = props || {};
 	let node: HTMLElement;
 	if (typeof initializer === "function") {
+		props["children"] = children || [];
 		// Initialize the component by calling the initializer function.
-		props["children"] = children;
 		let generator = initializer(props);
-		return new Component(generator);
+		if (typeof generator !== "function") {
+			throw new Error("Snowblind component initializers must return a function.")
+		}
+		return new Component(generator, initializer.displayName || initializer.name);
+	} else if (initializer === -32) {
+		node = (document.createDocumentFragment() as unknown as HTMLElement);
 	} else {
 		node = document.createElement(initializer);
 	}
-	if (props) {
-		for (const [key, value] of Object.entries(props)) {
-			if (typeof value === "function") {
-				// Apply an event listener to run the passed callback
-				node[key.toLowerCase()] = value;
-			} else if (value instanceof Observable) {
-				value.subscribe((newValue) => {
-					node.setAttribute(key, newValue);
-				});
-				node.setAttribute(key, value.value);
-			} else if (value instanceof Reference) {
-				value.current = node;
-			} else if (typeof value === "object") {
-				if (key === "style") {
-					for (let [styleKey, styleValue] of Object.entries(value)) {
-						if (styleValue instanceof Observable) {
-							styleValue.subscribe((newValue) => {
-								node.style[styleKey] = newValue;
-							});
-						}
-						if (styleValue === null) {
-							styleValue = "none";
-						} else if (typeof styleValue === "number") {
-							styleValue = styleValue + "px";
-						}
-						node.style[styleKey] = styleValue;
+	for (const [key, value] of Object.entries(props)) {
+		if (typeof value === "function") {
+			// Apply an event listener to run the passed callback
+			node[key] = value;
+		} else if (value instanceof Observable) {
+			node.setAttribute(key, value.value);
+		} else if (value instanceof Reference) {
+			value.current = node;
+		} else if (typeof value === "object") {
+			if (key === "style") {
+				for (let [styleKey, styleValue] of Object.entries(value)) {
+					if (styleValue === null) {
+						styleValue = "none";
+					} else if (typeof styleValue === "number") {
+						styleValue = styleValue + "px";
 					}
-				} else if (key === "props") {
-					for (const [styleKey, styleValue] of Object.entries(
-						value
-					)) {
-						if (styleValue instanceof Observable) {
-							styleValue.subscribe((newValue) => {
-								node[styleKey] = newValue;
-							});
-						}
-						node[styleKey] = styleValue;
-					}
-				} else {
-					// Check whether we want to set attributes whose value is an object
-					if (options.allowObjectProperties) {
-						node.setAttribute(key, JSON.stringify(value));
-					}
+					node.style[styleKey] = styleValue;
+				}
+			} else if (key === "props") {
+				for (const [styleKey, styleValue] of Object.entries(value)) {
+					node[styleKey] = styleValue;
 				}
 			} else {
-				node.setAttribute(key, value.toString());
+				// Check whether we want to set attributes whose value is an object
+				if (options.allowObjectProperties) {
+					node.setAttribute(key, JSON.stringify(value));
+				}
 			}
+		} else {
+			node.setAttribute(key, value.toString());
 		}
 	}
 	const loopChildren = (children: any[]) => {
@@ -84,13 +79,9 @@ function make(
 				child.didUpdate();
 			} else if (child instanceof HTMLElement) {
 				node.appendChild(child);
-			} else if (child[isProxy] instanceof Observable) {
+			} else if (child && child[isProxy] instanceof Observable) {
 				// Store the generated item in a variable so we can access it on each update.
 				let lastItem = document.createTextNode(child);
-				child[isProxy].subscribe((newValue: any) => {
-					// Change the value of the child node.
-					lastItem.textContent = newValue;
-				});
 				node.appendChild(lastItem);
 			} else {
 				node.appendChild(document.createTextNode(child));
@@ -101,4 +92,4 @@ function make(
 	return node;
 }
 
-export { make }
+export { make };
