@@ -18,6 +18,6 @@ declare type MakeFunctionInitializer = {
  * @param children An array of child elements.
  * @returns The generated node as HTMLElement.
  */
-declare function make(initializer: string | MakeFunctionInitializer | -32, props: Object | null, ...children: any[] | null): HTMLElement | Component;
+declare function make(initializer: string | MakeFunctionInitializer | -32, props: Object | null, ...children: any[] | null): Component | HTMLElement;
 export { make };
 //# sourceMappingURL=make.d.ts.map

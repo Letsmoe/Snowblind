@@ -38,36 +38,38 @@ function make(
 	} else {
 		node = document.createElement(initializer);
 	}
-	for (const [key, value] of Object.entries(props)) {
-		if (typeof value === "function") {
-			// Apply an event listener to run the passed callback
-			node[key] = value;
-		} else if (value instanceof Observable) {
-			node.setAttribute(key, value.value);
-		} else if (value instanceof Reference) {
-			value.current = node;
-		} else if (typeof value === "object") {
-			if (key === "style") {
-				for (let [styleKey, styleValue] of Object.entries(value)) {
-					if (styleValue === null) {
-						styleValue = "none";
-					} else if (typeof styleValue === "number") {
-						styleValue = styleValue + "px";
+	if (!(node instanceof DocumentFragment)) {
+		for (const [key, value] of Object.entries(props)) {
+			if (typeof value === "function") {
+				// Apply an event listener to run the passed callback
+				node[key] = value;
+			} else if (value instanceof Observable) {
+				node.setAttribute(key, value.value);
+			} else if (value instanceof Reference) {
+				value.current = node;
+			} else if (typeof value === "object") {
+				if (key === "style") {
+					for (let [styleKey, styleValue] of Object.entries(value)) {
+						if (styleValue === null) {
+							styleValue = "none";
+						} else if (typeof styleValue === "number") {
+							styleValue = styleValue + "px";
+						}
+						node.style[styleKey] = styleValue;
 					}
-					node.style[styleKey] = styleValue;
-				}
-			} else if (key === "props") {
-				for (const [styleKey, styleValue] of Object.entries(value)) {
-					node[styleKey] = styleValue;
+				} else if (key === "props") {
+					for (const [styleKey, styleValue] of Object.entries(value)) {
+						node[styleKey] = styleValue;
+					}
+				} else {
+					// Check whether we want to set attributes whose value is an object
+					if (options.allowObjectProperties) {
+						node.setAttribute(key, JSON.stringify(value));
+					}
 				}
 			} else {
-				// Check whether we want to set attributes whose value is an object
-				if (options.allowObjectProperties) {
-					node.setAttribute(key, JSON.stringify(value));
-				}
+				node.setAttribute(key, value.toString());
 			}
-		} else {
-			node.setAttribute(key, value.toString());
 		}
 	}
 	const loopChildren = (children: any[]) => {

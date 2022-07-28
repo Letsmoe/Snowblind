@@ -2,18 +2,26 @@ import { Snowblind, applyState } from "../../dist/snowblind.min.js";
 
 function Comp(props: Snowblind.Props) {
 	const [items, setItems] = applyState([]);
-	setInterval(() => {
-		setItems([{nice: "Make eggs"}])
+	setTimeout(() => {
+		setItems([{nice: "Make eggs"}, {nice: "Holy"}])
 	}, 1000);
 
-	return () => <>{props.children} {items.map(x => <p>{x.nice}</p>)}</>;
+	setTimeout(() => {
+		setItems([{nice: "Make eggs"}, {nice: "Holy"}, {nice: "Shit"}]);
+	}, 2000)
+
+	return () => <>
+		{items.map(key => {
+			return <Nested name={key.nice}/>
+		})}
+	</>;
+}
+
+function Nested({name}) {
+	return () => (<div><p>{name}</p></div>)
 }
 
 Snowblind.render(
 	document.body,
-	<Comp>
-		<div>
-			<p>Nice</p>
-		</div>
-	</Comp>
+	<Comp />
 );
